@@ -52,3 +52,13 @@ class Sprite extends Entity {
         ctx.restore();
     }
 }
+
+class Spaceship extends Sprite {
+    constructor(src,width,height,x,y,a = 0, moves = false, vx0 = 0, vy0 = 0) {
+        super(src,width,height,x,y,a,moves,vx0,vy0);
+        this.af = false;
+        this.ab = false;
+        this.al = false;
+        this.ar = false;
+    }
+}

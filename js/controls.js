@@ -10,10 +10,16 @@ function keydownManager (e) {
             player1.va = 5;
             break;
         case "ArrowUp":
-            player1.vx = 200;
+            player1.af = true;
             break;
         case "ArrowDown":
-            player1.vx = -200;
+            player1.ab = true;
+            break;
+        case ".":
+            player1.al = true;
+            break;
+        case "-":
+            player1.ar = true;
             break;
     }
 }
@@ -26,10 +32,16 @@ function keyupManager (e) {
             player1.va = 0;
             break;
         case "ArrowUp":
-            player1.vx = 0;
+            player1.af = false;
             break;
         case "ArrowDown":
-            player1.vx = 0;
+            player1.ab = false;
+            break;
+        case ".":
+            player1.al = false;
+            break;
+        case "-":
+            player1.ar = false;
             break;
     }
 }
