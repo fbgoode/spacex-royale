@@ -33,38 +33,19 @@ function renderLoop( render ) {
 
 function render(deltaT) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    physics(deltaT/1000);
+    physics.step(deltaT/1000);
     player1.draw();
+    block.draw();
 }
 
-function physics(dT) {
-    player1.a += dT * player1.va;
-    player1.x += dT * player1.vx;
-    player1.y += dT * player1.vy;
-    let ax = 0;
-    let ay = 0;
-    if(player1.af) {
-        ax += 1500 * Math.sin(player1.a);
-        ay += 1500 * -Math.cos(player1.a);
-    }
-    if(player1.ab) {
-        ax -= 500 * Math.sin(player1.a);
-        ay -= 500 * -Math.cos(player1.a);
-    }
-    if(player1.al) {
-        ax -= 500 * Math.cos(player1.a);
-        ay -= 500 * Math.sin(player1.a);
-    }
-    if(player1.ar) {
-        ax += 500 * Math.cos(player1.a);
-        ay += 500 * Math.sin(player1.a);
-    }
-    ax -= Math.sign(player1.vx) * 0.006 * player1.vx**2;
-    ay -= Math.sign(player1.vy) * 0.006 * player1.vy**2;
-    player1.vx += dT * ax;
-    player1.vy += dT * ay;
+let stats = {
+    boost: 1500,
+    gas: 500,
+    HP: 500,
+    dmg: 20
 }
-
-let player1 = new Spaceship("img/ship1.svg",60,60,300,150,90,true);
+let player1 = new Spaceship(stats,"img/ship1.svg",60,60,300,150,90,true);
+let block = new Block("blue",700,300,1920/2,1080/2);
+let physics = new Physics(0.006,0.8,[player1],block.walls,block.salients);
 
 renderLoop(render);
