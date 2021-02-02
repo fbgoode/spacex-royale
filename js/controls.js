@@ -15,11 +15,39 @@ function keydownManager (e) {
         case "ArrowDown":
             player1.ab = true;
             break;
-        case ".":
+        case "-":
+            player1.shooting = true;
+            break;
+        case ",":
             player1.al = true;
             break;
-        case "-":
+        case ".":
             player1.ar = true;
+            break;
+        case "d":
+        case "D":
+            player2.va = -5;
+            break;
+        case "g":
+        case "G":
+            player2.va = 5;
+            break;
+        case "r":
+        case "R":
+            player2.af = true;
+            break;
+        case "f":
+        case "F":
+            player2.ab = true;
+            break;
+        case "1":
+            player2.al = true;
+            break;
+        case "2":
+            player2.ar = true;
+            break;
+        case "3":
+            player2.shooting = true;
             break;
     }
 }
@@ -37,21 +65,49 @@ function keyupManager (e) {
         case "ArrowDown":
             player1.ab = false;
             break;
-        case ".":
+        case "-":
+            player1.shooting = false;
+            break;
+        case ",":
             player1.al = false;
             break;
-        case "-":
+        case ".":
             player1.ar = false;
+            break;
+        case "d":
+        case "D":
+            player2.va = 0;
+            break;
+        case "g":
+        case "G":
+            player2.va = 0;
+            break;
+        case "r":
+        case "R":
+            player2.af = false;
+            break;
+        case "f":
+        case "F":
+            player2.ab = false;
+            break;
+        case "1":
+            player2.al = false;
+            break;
+        case "2":
+            player2.ar = false;
+            break;
+        case "3":
+            player2.shooting = false;
             break;
     }
 }
 
 function gamepadHandler(){
     let gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
-    if (!gamepads || gamepads[0]==null) {
+    let gp = gamepads[0];
+    if (!gamepads || gamepads[0]==null || gp.buttons.length<15) {
         return;
     }
-    let gp = gamepads[0];
     if (gp.buttons[15].pressed) {
         player2.va = -5;
     } else if (gp.buttons[13].pressed) {
@@ -63,4 +119,5 @@ function gamepadHandler(){
     player2.ab = gp.buttons[14].pressed;
     player2.al = gp.buttons[6].pressed;
     player2.ar = gp.buttons[7].pressed;
+    player2.shooting = gp.buttons[2].pressed;
 }

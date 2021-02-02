@@ -1,126 +1,13 @@
-class Point {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-    }
-}
-
-class Plain extends Point {
-    constructor(x, y, nx, ny) {
-        super(x,y);
-        this.nx = nx;
-        this.ny = ny;
-    }
-}
-
-class Wall extends Plain {
-    constructor(l, x, y, nx, ny) {
-        super(x,y,nx,ny);
-        this.l = l;
-    }
-}
-
-class Entity {
-    constructor(x, y, a = 0, moves = false, vx0 = 0, vy0 = 0) {
-        this.x = x;
-        this.y = y;
-        this.a = a * 0.01745;
-        this.moves = moves;
-        if (moves) {
-            this.vx = vx0;
-            this.vy = vy0;
-            this.va = 0;
-        }
-    }
-}
-
-class Rectangle extends Entity {
-    constructor(color,width,height,x,y,a = 0, moves = false, vx0 = 0, vy0 = 0) {
-        super(x, y, a, moves, vx0, vy0);
-        this.width = width;
-        this.height = height;
-        this.color = color;
-    }
-    draw() {
-        ctx.save();
-        ctx.fillStyle = this.color;
-        ctx.translate(this.x, this.y);
-        if (this.a) {
-            ctx.rotate(this.a);
-        }
-        ctx.translate(-this.width * 0.5, -this.height * 0.5);
-        ctx.fillRect(0, 0, this.width, this.height);
-        ctx.restore();
-    }
-}
-
-class Block extends Rectangle {
-    constructor(color,width,height,x,y,a = 0, moves = false, vx0 = 0, vy0 = 0) {
-        super(color,width,height,x, y, a, moves, vx0, vy0);
-        this.walls = [];
-        let vxx = 1;
-        let vxy = 0;
-        let vyx = 0;
-        let vyy = 1;
-        if (a) {
-            vxx = Math.cos(a);
-            vxy = Math.sin(a);
-            vyx = -Math.sin(a);
-            vyy = Math.cos(a);
-        }
-        this.walls.push(new Wall(width, x + height/2 * vyx, y + height/2 * vyy, vyx, vyy));
-        this.walls.push(new Wall(width, x - height/2 * vyx, y - height/2 * vyy, -vyx, -vyy));
-        this.walls.push(new Wall(height, x + width/2 * vxx, y + width/2 * vxy, vxx, vxy));
-        this.walls.push(new Wall(height, x - width/2 * vxx, y - width/2 * vxy, -vxx, -vxy));
-        this.salients = [];
-        this.salients.push(new Point(x + width/2 * vxx + height/2 * vyx, y + width/2 * vxy + height/2 * vyy));
-        this.salients.push(new Point(x + width/2 * vxx - height/2 * vyx, y + width/2 * vxy - height/2 * vyy));
-        this.salients.push(new Point(x - width/2 * vxx + height/2 * vyx, y - width/2 * vxy + height/2 * vyy));
-        this.salients.push(new Point(x - width/2 * vxx - height/2 * vyx, y - width/2 * vxy - height/2 * vyy));
-    }
-}
-
-class Sprite extends Entity {
-    constructor(src,width,height,x,y,a = 0, moves = false, vx0 = 0, vy0 = 0) {
-        super(x, y, a, moves, vx0, vy0);
-        this.width = width;
-        this.height = height;
-        this.img = new Image();
-        this.img.src = src;
-    }
-    draw() {
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        if (this.a) {
-            ctx.rotate(this.a);
-        }
-        ctx.translate(-this.width * 0.5, -this.height * 0.5);
-        ctx.drawImage(this.img, 0, 0, this.width, this.height);
-        ctx.restore();
-    }
-}
-
-class Spaceship extends Sprite {
-    constructor(stats,src,width,height,x,y,a = 0, moves = false, vx0 = 0, vy0 = 0) {
-        super(src,width,height,x,y,a,moves,vx0,vy0);
-        this.af = false;
-        this.ab = false;
-        this.al = false;
-        this.ar = false;
-        this.stats = stats;
-        this.r = 25;
-    }
-}
-
 class Physics {
-    constructor(cd, ce = 0.8, players = [], walls = [], salients = []) {
+    constructor(cd, ce = 0.8, players = [], walls = [], salients = [], bullets = []) {
         this.cd = cd;
         this.ce = ce;
         this.players = players;
         this.walls = walls;
         this.salients = salients;
+        this.bullets = bullets;
     }
-    wCollisions(player) {
+    wpCollisions(player) {
         let Col = {};
         let dmin = 0;
         for (let W of this.walls) {
@@ -143,7 +30,7 @@ class Physics {
             return true;
         }
     }
-    sCollisions(player) {
+    spCollisions(player) {
         let Col = {};
         let dmin = 0;
         let mod = 0;
@@ -167,7 +54,7 @@ class Physics {
             }
         }
     }
-    pCollisions(player,rest) {
+    ppCollisions(player,rest) {
         let Col = {};
         let dmin = 0;
         let mod = 0;
@@ -198,13 +85,15 @@ class Physics {
             player.a += dT * player.va;
             if (player.a>2*Math.PI) {
                 player.a -= 2*Math.PI;
+            } else if (player.a<-2*Math.PI) {
+                player.a += 2*Math.PI;
             }
             player.x += dT * player.vx;
             player.y += dT * player.vy;
             // Detect collisions
-            if (!this.wCollisions(player)) {
-                if (!this.sCollisions(player)) {
-                    this.pCollisions(player,rest)
+            if (!this.wpCollisions(player)) {
+                if (!this.spCollisions(player)) {
+                    this.ppCollisions(player,rest);
                 }
             }
             // Calculate accelerations from booster forces
@@ -212,7 +101,6 @@ class Physics {
             let ay = 0;
             if(player.af) {
                 ax += player.stats.boost * Math.sin(player.a);
-                
                 ay += player.stats.boost * -Math.cos(player.a);
             }
             if(player.ab) {
@@ -228,12 +116,22 @@ class Physics {
                 ay += player.stats.gas * Math.sin(player.a);
             }
             // Add drag force to accelerations
-            ax -= Math.sign(player.vx) * this.cd * player.vx**2;
-            ay -= Math.sign(player.vy) * this.cd * player.vy**2;
+            let mod = this.vMod(player.vx,player.vy);
+            ax -= player.vx * this.cd * mod;
+            ay -= player.vy * this.cd * mod;
             // Increment velocities from accelerations
             player.vx += dT * ax;
             player.vy += dT * ay;
             [, ...rest] = rest;
+            // Subtract dT from weapon refresh timer
+            player.wrefresh -= dT;
+        }
+        let i=0;
+        for (var bullet of this.bullets) {
+            bullet.x += dT * bullet.vx;
+            bullet.y += dT * bullet.vy;
+            bullet.draw();
+            i++;
         }
     }
     // Is point in front of wall?
@@ -270,5 +168,9 @@ class Physics {
     // Scalar product
     pE(x,y,x2,y2) {
         return (x*x2+y*y2);
+    }
+    // Module of vector
+    vMod(x,y) {
+        return Math.sqrt(x**2+y**2);
     }
 }
