@@ -33,8 +33,10 @@ function renderLoop( render ) {
 
 function render(deltaT) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    gamepadHandler();
     physics.step(deltaT/1000);
     player1.draw();
+    player2.draw();
     block.draw();
 }
 
@@ -45,7 +47,14 @@ let stats = {
     dmg: 20
 }
 let player1 = new Spaceship(stats,"img/ship1.svg",60,60,300,150,90,true);
+let player2 = new Spaceship(stats,"img/ship1.svg",60,60,400,500,270,true);
 let block = new Block("blue",700,300,1920/2,1080/2);
-let physics = new Physics(0.006,0.8,[player1],block.walls,block.salients);
+let edges = [
+    new Wall(1920,1920/2,0,0,1),
+    new Wall(1920,1920/2,1080,0,-1),
+    new Wall(1080,0,1080/2,1,0),
+    new Wall(1080,1920,1080/2,-1,0)
+];
+let physics = new Physics(0.006,0.8,[player1,player2],[...edges,...block.walls],block.salients);
 
 renderLoop(render);

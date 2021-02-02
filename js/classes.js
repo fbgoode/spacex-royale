@@ -108,7 +108,7 @@ class Spaceship extends Sprite {
         this.al = false;
         this.ar = false;
         this.stats = stats;
-        this.r = 30;
+        this.r = 25;
     }
 }
 
@@ -120,7 +120,79 @@ class Physics {
         this.walls = walls;
         this.salients = salients;
     }
+    wCollisions(player) {
+        let Col = {};
+        let dmin = 0;
+        for (let W of this.walls) {
+            if (this.bWP(W,player)) {
+                let d = this.dPnC(W,{x:player.x,y:player.y,r:player.r});
+                if (d<dmin && d>-player.r) {
+                    dmin = d;
+                    Col = W;
+                }
+            }
+        }
+        if (dmin) {
+            player.x -= Col.nx * 2 * dmin;
+            player.y -= Col.ny * 2 * dmin;
+            let pv = 2 * this.ce * this.pE(Col.nx,Col.ny,player.vx,player.vy);
+            if (pv < 0) {
+                player.vx -= Col.nx * pv; 
+                player.vy -= Col.ny * pv; 
+            }
+            return true;
+        }
+    }
+    sCollisions(player) {
+        let Col = {};
+        let dmin = 0;
+        let mod = 0;
+        for (let P of this.salients) {
+            let d = this.dPC(P,player);
+            if (d<dmin) {
+                dmin = d;
+                Col = P;
+                mod = this.dPP(P,player);
+            }
+        }
+        if (dmin) {
+            let nx = (player.x-Col.x)/mod;
+            let ny = (player.y-Col.y)/mod;
+            player.x -= nx * 2 * dmin;
+            player.y -= ny * 2 * dmin;
+            let pv = 2 * this.ce * this.pE(nx,ny,player.vx,player.vy);
+            if (pv < 0) {
+                player.vx -= nx * pv; 
+                player.vy -= ny * pv; 
+            }
+        }
+    }
+    pCollisions(player,rest) {
+        let Col = {};
+        let dmin = 0;
+        let mod = 0;
+        for (let C of rest) {
+            let d = this.dCC(C,player);
+            if (d<dmin) {
+                dmin = d;
+                Col = C;
+                mod = this.dPP(C,player);
+            }
+        }
+        if (dmin) {
+            let nx = (player.x-Col.x)/mod;
+            let ny = (player.y-Col.y)/mod;
+            player.x -= nx * 2 * dmin;
+            player.y -= ny * 2 * dmin;
+            let pv = this.ce * this.pE(nx,ny,player.vx-Col.vx,player.vy-Col.vy);
+            player.vx -= nx * pv; 
+            player.vy -= ny * pv;
+            Col.vx += nx * pv; 
+            Col.vy += ny * pv;
+        }
+    }
     step(dT) {
+        let [, ...rest] = this.players
         for (var player of this.players) {
             // Increment positions from velocities
             player.a += dT * player.va;
@@ -130,45 +202,9 @@ class Physics {
             player.x += dT * player.vx;
             player.y += dT * player.vy;
             // Detect collisions
-            let Col = {};
-            let dmin = 0;
-            for (let W of this.walls) {
-                if (this.bWP(W,player)) {
-                    let d = this.dPnC(W,{x:player.x,y:player.y,r:player.r});
-                    if (d<dmin && d>-player.r) {
-                        dmin = d;
-                        Col = W;
-                    }
-                }
-            }
-            if (dmin) {
-                player.x -= Col.nx * 2 * dmin;
-                player.y -= Col.ny * 2 * dmin;
-                let pv = 2 * this.ce * this.pE(Col.nx,Col.ny,player.vx,player.vy);
-                if (pv < 0) {
-                    player.vx -= Col.nx * pv; 
-                    player.vy -= Col.ny * pv; 
-                }
-            } else {
-                let mod = 0;
-                for (let P of this.salients) {
-                    let d = this.dPC(P,player);
-                    if (d<dmin) {
-                        dmin = d;
-                        Col = P;
-                        mod = this.dPP(P,player);
-                    }
-                }
-                if (dmin) {
-                    let nx = (player.x-Col.x)/mod;
-                    let ny = (player.y-Col.y)/mod;
-                    player.x -= nx * 2 * dmin;
-                    player.y -= ny * 2 * dmin;
-                    let pv = 2 * this.ce * this.pE(nx,ny,player.vx,player.vy);
-                    if (pv < 0) {
-                        player.vx -= nx * pv; 
-                        player.vy -= ny * pv; 
-                    }
+            if (!this.wCollisions(player)) {
+                if (!this.sCollisions(player)) {
+                    this.pCollisions(player,rest)
                 }
             }
             // Calculate accelerations from booster forces
@@ -176,17 +212,18 @@ class Physics {
             let ay = 0;
             if(player.af) {
                 ax += player.stats.boost * Math.sin(player.a);
+                
                 ay += player.stats.boost * -Math.cos(player.a);
             }
-            if(player1.ab) {
+            if(player.ab) {
                 ax -= player.stats.gas * Math.sin(player.a);
                 ay -= player.stats.gas * -Math.cos(player.a);
             }
-            if(player1.al) {
+            if(player.al) {
                 ax -= player.stats.gas * Math.cos(player.a);
                 ay -= player.stats.gas * Math.sin(player.a);
             }
-            if(player1.ar) {
+            if(player.ar) {
                 ax += player.stats.gas * Math.cos(player.a);
                 ay += player.stats.gas * Math.sin(player.a);
             }
@@ -196,6 +233,7 @@ class Physics {
             // Increment velocities from accelerations
             player.vx += dT * ax;
             player.vy += dT * ay;
+            [, ...rest] = rest;
         }
     }
     // Is point in front of wall?

@@ -45,3 +45,22 @@ function keyupManager (e) {
             break;
     }
 }
+
+function gamepadHandler(){
+    let gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+    if (!gamepads || gamepads[0]==null) {
+        return;
+    }
+    let gp = gamepads[0];
+    if (gp.buttons[15].pressed) {
+        player2.va = -5;
+    } else if (gp.buttons[13].pressed) {
+        player2.va = 5;
+    } else {
+        player2.va = 0;
+    }
+    player2.af = gp.buttons[12].pressed;
+    player2.ab = gp.buttons[14].pressed;
+    player2.al = gp.buttons[6].pressed;
+    player2.ar = gp.buttons[7].pressed;
+}
