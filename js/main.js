@@ -67,7 +67,7 @@ let weapon2 = {
     dmg: 8
 }
 let player1 = new Spaceship(stats,weapon1,"img/ship1-b.svg",60,60,300,150,90,true);
-let player2 = new Spaceship(stats,weapon2,"img/ship1-r.svg",60,60,400,500,270,true);
+let player2 = new Spaceship(stats,weapon2,"img/ship1-r.svg",60,60,1800,800,270,true);
 let block = new Block("purple",700,300,1920/2,1080/2);
 let edges = [
     new Wall(1920,1920/2,0,0,1),

@@ -8,13 +8,7 @@ body {
     background: #000;
 }
 
-/* Clases */
-
-
-
-/* IDs */
-
-#gameCanvas {
+.fullres {
     background: #FFF;
     display: block;
     margin: auto;
@@ -22,4 +16,18 @@ body {
     max-height:100%;
     width:auto;
     height:auto;
+}
+
+/* Clases */
+
+
+
+/* IDs */
+
+#gameCanvas {
+}
+
+#gameScreen {
+    width:1920px;
+    height:1080px;
 }
