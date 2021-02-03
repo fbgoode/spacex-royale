@@ -12,7 +12,7 @@ class Physics {
         let dmin = 0;
         for (let W of this.walls) {
             if (this.bWP(W,player)) {
-                let d = this.dPnC(W,{x:player.x,y:player.y,r:player.r});
+                let d = this.dPnC(W,player);
                 if (d<dmin && d>-player.r) {
                     dmin = d;
                     Col = W;
@@ -25,10 +25,12 @@ class Physics {
             let pv = 2 * this.ce * this.pE(Col.nx,Col.ny,player.vx,player.vy);
             if (pv < 0) {
                 player.vx -= Col.nx * pv; 
-                player.vy -= Col.ny * pv; 
+                player.vy -= Col.ny * pv;
+                if (pv<-300) player.HP += Math.floor(pv * (1/this.ce - 1) / 10);
             }
             return true;
         }
+        return false;
     }
     spCollisions(player) {
         let Col = {};
@@ -50,9 +52,12 @@ class Physics {
             let pv = 2 * this.ce * this.pE(nx,ny,player.vx,player.vy);
             if (pv < 0) {
                 player.vx -= nx * pv; 
-                player.vy -= ny * pv; 
+                player.vy -= ny * pv;
+                if (pv<-300) player.HP += Math.floor(pv * (1/this.ce - 1) / 10);
             }
+            return true;
         }
+        return false;
     }
     ppCollisions(player,rest) {
         let Col = {};
@@ -76,7 +81,32 @@ class Physics {
             player.vy -= ny * pv;
             Col.vx += nx * pv; 
             Col.vy += ny * pv;
+            if (pv<-300) {
+                let dmg = Math.floor(pv * (1/this.ce - 1) / 10);
+                player.HP += dmg;
+                Col.HP += dmg;
+            }
         }
+    }
+    wbCollisions(bullet) {
+        for (let W of this.walls) {
+            if (this.bWP(W,bullet)) {
+                let d = this.dPnP(W,bullet);
+                if (d<0 && d>-40) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    pbCollisions(bullet) {
+        for (let player of this.players) {
+            if (this.dPC(bullet,player)<=0) {
+                player.HP -= bullet.dmg;
+                return true;
+            }
+        }
+        return false;
     }
     step(dT) {
         let [, ...rest] = this.players
@@ -126,12 +156,17 @@ class Physics {
             // Subtract dT from weapon refresh timer
             player.wrefresh -= dT;
         }
-        let i=0;
-        for (var bullet of this.bullets) {
+        // Move bullets
+        for (let bullet of this.bullets) {
             bullet.x += dT * bullet.vx;
             bullet.y += dT * bullet.vy;
             bullet.draw();
-            i++;
+        }
+        // Detect collisions
+        for (let i in this.bullets) {
+            if (this.wbCollisions(this.bullets[i]) || this.pbCollisions(this.bullets[i])) {
+                this.bullets.splice(i,1);
+            }
         }
     }
     // Is point in front of wall?

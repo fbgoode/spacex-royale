@@ -1,3 +1,11 @@
+
+var map = {}; // You could also use an array
+onkeydown = onkeyup = function(e){
+    e = e || event; // to deal with IE
+    map[e.keyCode] = e.type == 'keydown';
+    /* insert conditional here */
+}
+
 document.addEventListener('keydown', keydownManager);
 document.addEventListener('keyup', keyupManager);
 
@@ -15,13 +23,14 @@ function keydownManager (e) {
         case "ArrowDown":
             player1.ab = true;
             break;
-        case "-":
+        case ".":
             player1.shooting = true;
             break;
-        case ",":
+        case "m":
+        case "M":
             player1.al = true;
             break;
-        case ".":
+        case ",":
             player1.ar = true;
             break;
         case "d":
@@ -65,13 +74,14 @@ function keyupManager (e) {
         case "ArrowDown":
             player1.ab = false;
             break;
-        case "-":
+        case ".":
             player1.shooting = false;
             break;
-        case ",":
+        case "m":
+        case "M":
             player1.al = false;
             break;
-        case ".":
+        case ",":
             player1.ar = false;
             break;
         case "d":
