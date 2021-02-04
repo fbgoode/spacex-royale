@@ -34,6 +34,50 @@ body {
     margin: 2vmin 0;
 }
 
+.menuItem.selected {
+    margin: 2vmin -1.1em;
+}
+
+.menuText {
+    font-family: monospace;
+    font-size: 3vmin;
+    color: white;
+    text-shadow: 0 0 4vmin white,
+    0 0 0.6vmin rgba(255,255,255,0.7);
+    padding-bottom:2vmin;
+    margin: 0.3vmin 0;
+}
+
+.blueText {
+    color: rgb(127, 146, 255);
+    text-shadow: 0 0 4vmin rgb(127, 146, 255),
+    0 0 0.6vmin rgba(127, 146, 255,0.7);
+}
+
+.redText {
+    color: rgb(255, 127, 127);
+    text-shadow: 0 0 4vmin rgb(255, 127, 127),
+    0 0 0.6vmin rgba(255, 127, 127,0.7);
+}
+
+.menuSquare {
+    width:22vmin;
+    height:22vmin;
+    margin:1vmin;
+    opacity:0.5;
+}
+
+.teamSquare {
+    width:47vmin;
+    height:22vmin;
+    margin:1vmin;
+}
+
+.controlsBoxTitle {
+    font-size: 3.8vmin;
+    margin-bottom: 2.5vmin;
+}
+
 .menuItem.selected::after {
     content: " <";
 }
@@ -42,12 +86,27 @@ body {
 }
 
 .controlsBox {
-    border: 0.5vmin solid white;
     width: 40vmin;
     height: 70vmin;
     margin:2vmin;
+}
+
+.whiteBox {
+    border: 0.5vmin solid white;
     box-shadow: 0 0 1.5vmin rgba(255, 255, 255, 0.7),
     inset 0 0 1.5vmin rgba(255,255,255,0.7);
+}
+
+.blueBox {
+    border: 0.5vmin solid rgb(127, 146, 255);
+    box-shadow: 0 0 1.5vmin rgba(127, 146, 255, 0.7),
+    inset 0 0 1.5vmin rgba(127, 146, 255, 0.7);
+}
+
+.redBox {
+    border: 0.5vmin solid rgb(255, 127, 127);
+    box-shadow: 0 0 1.5vmin rgba(255, 127, 127, 0.7),
+    inset 0 0 1.5vmin rgba(255, 127, 127, 0.7);
 }
 
 .background-container{
@@ -85,6 +144,143 @@ body {
     flex-direction:row;
 }
 
+.space-between {
+    width:87vmin;
+    justify-content:space-between;
+}
+
+.p-0 {
+    padding:0!important;
+}
+
+.mb-0 {
+    margin-bottom: 0!important;
+}
+
+.w-100 {
+    width:100%!important;
+}
+
+.opacity-1 {
+    opacity:1;
+}
+
+.opacity-03 {
+    opacity:0.3;
+}
+
+.display-none{
+    display:none!important;
+}
+
+.weaponBlue {
+    background-color:white;
+    box-shadow: 0 0 2.5vmin 0.5vmin rgba(127, 146, 255, 0.8),
+    0 0 0.5vmin 0.2vmin rgb(127, 146, 255),
+    inset 0 0 0.5vmin 0.3vmin rgb(127, 146, 255);
+}
+
+.weaponRed {
+    background-color:white;
+    box-shadow: 0 0 2.5vmin 0.5vmin rgba(255, 131, 127, 0.8),
+    0 0 0.5vmin 0.2vmin rgb(255, 131, 127),
+    inset 0 0 0.5vmin 0.3vmin rgb(255, 131, 127);
+}
+
+.weapon {
+    transform: rotate(45deg);
+}
+
+.weaponSingle {
+    width:4%;
+    height:60%;
+    border-radius: 50em;
+}
+
+.weaponDouble.weaponBlue {
+    background:none;
+    box-shadow:none;
+}
+
+.weaponDouble.weaponBlue > div {
+    width:2%;
+    height:35%;
+    margin:0 15%;
+    background-color: white;
+    box-shadow: 0 0 2.5vmin 0.5vmin rgba(127, 146, 255, 0.8),
+    0 0 0.5vmin 0.2vmin rgb(127, 146, 255),
+    inset 0 0 0.2vmin 0.15vmin rgb(127, 146, 255);
+}
+
+.weaponDouble.weaponRed > div {
+    width:2%;
+    height:35%;
+    margin:0 15%;
+    background-color: white;
+    box-shadow: 0 0 2.5vmin 0.5vmin rgba(255, 131, 127, 0.8),
+    0 0 0.5vmin 0.2vmin rgb(255, 131, 127),
+    inset 0 0 0.2vmin 0.15vmin rgb(255, 131, 127);
+}
+
+.weaponDouble {
+    width:100%;
+    height:100%;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.weaponCannon {
+    width:8%;
+    height:50%;
+    border-radius: 50em;
+}
+
+.stats {
+    flex-wrap: wrap;
+}
+
+.statTitle {
+    width:100%;
+    text-align: center;
+    padding-bottom:1vmin;
+}
+
+.statText {
+    font-size: 2.5vmin;
+    width:18%;
+    padding-bottom:0.5vmin;
+    text-align: right;
+}
+
+.statBarMax {
+    width:50%;
+    height:20%;
+    margin-left:8%;
+    padding-bottom:0.5vmin;
+}
+
+.statBar {
+    width:70%;
+    height: 100%;
+    border-radius:1.5px;
+}
+
+.statBarR {
+    background: rgb(255, 80, 80);
+    box-shadow: 0 0 1vmin 0.1vmin rgba(255, 127, 127, 0.7);
+}
+
+.statBarG {
+    background: rgb(80, 255, 109);
+    box-shadow: 0 0 1vmin 0.1vmin rgba(127, 255, 138, 0.7);
+}
+
+.statBarB {
+    background: rgb(80, 106, 255);
+    box-shadow: 0 0 1vmin 0.1vmin rgba(127, 157, 255, 0.7);
+}
+
 /* IDs */
 
 #gameCanvas {
@@ -95,7 +291,6 @@ body {
     width:auto;
     height:auto;
 	z-index: 10;
-    display:none;
 }
 
 #gameScreen {
@@ -103,7 +298,14 @@ body {
 }
 
 #mainMenu {
-    display:none;
+    width:100%;
+}
+
+#controlsMenu {
+    width:100%;
+}
+
+#PVPMenu {
     width:100%;
 }
 
@@ -113,6 +315,48 @@ body {
 
 #gradients1 {
     opacity:0;
+}
+
+#spaceship1.shipBlue {
+    background-image: url(/img/ship1-b.svg);
+    background-size: 60%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#spaceship2.shipBlue {
+    background-image: url(/img/ship2-b.svg);
+    background-size: 60%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#spaceship3.shipBlue {
+    background-image: url(/img/ship3-b.svg);
+    background-size: 60%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#spaceship1.shipRed {
+    background-image: url(/img/ship1-r.svg);
+    background-size: 60%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#spaceship2.shipRed {
+    background-image: url(/img/ship2-r.svg);
+    background-size: 60%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#spaceship3.shipRed {
+    background-image: url(/img/ship3-r.svg);
+    background-size: 60%;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 /* Media */
