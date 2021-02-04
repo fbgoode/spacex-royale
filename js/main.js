@@ -1,5 +1,6 @@
-var canvas = document.getElementById("gameCanvas");
-var ctx = canvas.getContext("2d");
+let canvas = document.getElementById("gameCanvas");
+let ctx = canvas.getContext("2d");
+ctx.lineCap = "round";
 
 /*
 let rect1 = new Rectangle("red",200,100,300,150,15);
@@ -8,7 +9,7 @@ sprite1.draw();
 */
 
 (function() {
-    var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+    let requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
                                 window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
     window.requestAnimationFrame = requestAnimationFrame;
   })();
@@ -48,25 +49,32 @@ function frame(deltaT) {
 }
 
 let stats = {
-    boost: 1500,
-    gas: 500,
+    boost: 2000,
+    gas: 800,
     HP: 500
 }
-let weapon1 = {
-    v: 1000,
-    color: "blue",
+let weapon2 = {
+    v: 1200,
+    color: "red",
     type: 'single',
     freq: 0.2,
-    dmg: 20
+    dmg: 15
 }
-let weapon2 = {
-    v: 650,
-    color: "red",
+let weapon1 = {
+    v: 800,
+    color: "blue",
     type: 'double',
     freq: 0.15,
     dmg: 8
 }
-let player1 = new Spaceship(stats,weapon1,"img/ship1-b.svg",60,60,300,150,90,true);
+let weapon3 = {
+    v: 3000,
+    color: "blue",
+    type: 'single',
+    freq: 1.5,
+    dmg: 40
+}
+let player1 = new Spaceship(stats,weapon3,"img/ship1-b.svg",60,60,300,150,90,true);
 let player2 = new Spaceship(stats,weapon2,"img/ship1-r.svg",60,60,1800,800,270,true);
 let block = new Block("purple",700,300,1920/2,1080/2);
 let edges = [
@@ -77,4 +85,4 @@ let edges = [
 ];
 let physics = new Physics(0.006,0.8,[player1,player2],[...edges,...block.walls],block.salients);
 
-gameLoop(frame);
+//gameLoop(frame);

@@ -120,36 +120,50 @@ class Spaceship extends Sprite {
             if (this.weapon.type=="single") {
                 let mx = Math.cos(a);
                 let my = Math.sin(a);
-                let bullet = new Bullet(this.x+mx*30,this.y+my*30,a,this.weapon.v,this.weapon.color,this.weapon.dmg);
+                let bullet = new Bullet(this.x+mx*30,this.y+my*30,a,this.weapon.v,this.weapon.color,this.weapon.dmg,this.vx,this.vy);
                 physics.bullets.push(bullet);
-                bullet.draw();
+                this.vx -= this.weapon.dmg * this.weapon.v/500 * mx;
+                this.vy -= this.weapon.dmg * this.weapon.v/500 * my;
+
             } else {
                 let mx1 = Math.cos(a+0.35);
                 let my1 = Math.sin(a+0.35);
                 let mx2 = Math.cos(a-0.35);
                 let my2 = Math.sin(a-0.35);
-                let bullet1 = new Bullet(this.x+mx1*30,this.y+my1*30,a,this.weapon.v,this.weapon.color,this.weapon.dmg);
-                let bullet2 = new Bullet(this.x+mx2*30,this.y+my2*30,a,this.weapon.v,this.weapon.color,this.weapon.dmg);
+                let bullet1 = new Bullet(this.x+mx1*30,this.y+my1*30,a,this.weapon.v,this.weapon.color,this.weapon.dmg,this.vx,this.vy);
+                let bullet2 = new Bullet(this.x+mx2*30,this.y+my2*30,a,this.weapon.v,this.weapon.color,this.weapon.dmg,this.vx,this.vy);
                 physics.bullets.push(bullet1,bullet2);
-                bullet1.draw();
-                bullet2.draw();
+                this.vx -= this.weapon.dmg * this.weapon.v/500 * Math.cos(a) * 2;
+                this.vy -= this.weapon.dmg * this.weapon.v/500 * Math.sin(a) * 2;
             }
             this.wrefresh = this.weapon.freq;
         }
     }
 }
 
+class Particle extends Entity {
+    constructor(x, y, vx, vy, w, t, colorS, colorF = "") {
+        super(x,y,null,true,vx,vy);
+        this.w = w;
+        this.cS = colorS; // In RGB {r:255,g:255,b:255}
+        this.cF = colorF; // In RGB
+        this.t = t;
+    }
+    draw() {
+    }
+}
+
 class Bullet extends Entity {
-    constructor(x, y, a, v, color, dmg) {
+    constructor(x, y, a, v, color, dmg, vxs = 0, vys = 0) {
         let nx = Math.cos(a);
         let ny = Math.sin(a);
-        super(x,y,a,true,v*nx,v*ny);
+        super(x,y,a,true,v*nx+vxs,v*ny+vys);
         this.nx = nx;
         this.ny = ny;
-        this.l = v/50;
+        this.l = v/40;
         this.color = color;
         this.dmg = dmg;
-        this.w = dmg/4;
+        this.r = 2+dmg/6;
     }
     draw() {
         let mx = this.l/2*this.nx;
@@ -159,7 +173,7 @@ class Bullet extends Entity {
         ctx.moveTo(this.x-mx, this.y-my);
         ctx.lineTo(this.x+mx, this.y+my);
         ctx.strokeStyle = this.color;
-        ctx.lineWidth = this.w;
+        ctx.lineWidth = this.r;
         ctx.stroke();
         ctx.restore();
     }

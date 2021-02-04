@@ -12,10 +12,10 @@ document.addEventListener('keyup', keyupManager);
 function keydownManager (e) {
     switch (e.key) {
         case "ArrowLeft":
-            player1.va = -5;
+            player1.va = -3.4;
             break;
         case "ArrowRight":
-            player1.va = 5;
+            player1.va = 3.4;
             break;
         case "ArrowUp":
             player1.af = true;
@@ -35,11 +35,11 @@ function keydownManager (e) {
             break;
         case "d":
         case "D":
-            player2.va = -5;
+            player2.va = -3.4;
             break;
         case "g":
         case "G":
-            player2.va = 5;
+            player2.va = 3.4;
             break;
         case "r":
         case "R":
@@ -119,9 +119,9 @@ function gamepadHandler(){
         return;
     }
     if (gp.buttons[15].pressed) {
-        player2.va = -5;
+        player2.va = -3.4;
     } else if (gp.buttons[13].pressed) {
-        player2.va = 5;
+        player2.va = 3.4;
     } else {
         player2.va = 0;
     }

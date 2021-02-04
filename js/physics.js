@@ -92,7 +92,7 @@ class Physics {
         for (let W of this.walls) {
             if (this.bWP(W,bullet)) {
                 let d = this.dPnP(W,bullet);
-                if (d<0 && d>-40) {
+                if (d<0 && d>-80) {
                     return true;
                 }
             }
@@ -101,8 +101,10 @@ class Physics {
     }
     pbCollisions(bullet) {
         for (let player of this.players) {
-            if (this.dPC(bullet,player)<=0) {
+            if (this.dCC(bullet,player)<=0) {
                 player.HP -= bullet.dmg;
+                player.vx += bullet.dmg * bullet.vx/500;
+                player.vy += bullet.dmg * bullet.vy/500;
                 return true;
             }
         }

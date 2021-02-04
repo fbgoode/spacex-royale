@@ -8,10 +8,32 @@
     <link href="css/style.css" type="text/css" rel="stylesheet">
 </head>
 <body>
-    <canvas id="gameCanvas" class="fullres" width="1920" height="1080"></canvas>
+    <div class="background-container">
+        <div class="stars"></div>
+        <div class="twinkling"></div>
+        <div id="gradients1" class="gradient"></div>
+        <div id="gradients2" class="gradient"></div>
+    </div>
+    <div id="gameScreen" class="ratio-16-9 flex-center">
+        <div id="mainMenu" class="flex-center">
+            <div id="mainPVP" class="menuItem selected">Player vs. Player</div>
+            <div id="mainControls" class="menuItem">Controls</div>
+        </div>
+        <div id="controlsMenu" class="flex-center">
+            <div id="controlsContainer" class="flex-center row">
+                <div id="controlsP1" class="controlsBox">
+
+                </div>
+                <div id="controlsP2" class="controlsBox"></div>
+            </div>
+            <div id="controlsBack" class="menuItem selected">Back</div>
+        </div>
+    </div>
+    <canvas id="gameCanvas" width="1920" height="1080"></canvas>
     <script src="js/entities.js"></script>
     <script src="js/physics.js"></script>
     <script src="js/controls.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/gradients.js"></script>
 </body>
 </html>
