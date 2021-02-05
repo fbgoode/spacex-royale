@@ -32,6 +32,8 @@ body {
     0 0 1vmin rgba(255,255,255,0.7);
     padding-bottom:5vmin;
     margin: 2vmin 0;
+    cursor: pointer;
+    user-select: none;
 }
 
 .menuItem.selected {
@@ -46,6 +48,7 @@ body {
     0 0 0.6vmin rgba(255,255,255,0.7);
     padding-bottom:2vmin;
     margin: 0.3vmin 0;
+    user-select: none;
 }
 
 .blueText {

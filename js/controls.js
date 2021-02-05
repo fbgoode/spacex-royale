@@ -1,4 +1,4 @@
-const keydownManager = (e) => {
+const KDMGame = (e) => {
     switch (e.key) {
         case "ArrowLeft":
             player1.va = -3.4;
@@ -49,7 +49,7 @@ const keydownManager = (e) => {
             break;
     }
 }
-const keyupManager = (e) => {
+const KUMGame = (e) => {
     switch (e.key) {
         case "ArrowLeft":
             player1.va = 0;
@@ -120,6 +120,3 @@ const gamepadHandler = () => {
     player2.ar = gp.buttons[7].pressed;
     player2.shooting = gp.buttons[2].pressed;
 }
-
-document.addEventListener('keydown', keydownManager);
-document.addEventListener('keyup', keyupManager);
