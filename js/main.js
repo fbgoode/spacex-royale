@@ -1,6 +1,6 @@
-let canvas = document.getElementById("gameCanvas");
-let ctx = canvas.getContext("2d");
-ctx.lineCap = "round";
+//let canvas = document.getElementById("gameCanvas");
+//let ctx = canvas.getContext("2d");
+//ctx.lineCap = "round";
 
 /*
 let rect1 = new Rectangle("red",200,100,300,150,15);

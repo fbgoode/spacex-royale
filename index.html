@@ -4,21 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpaceX Royale</title>
-
     <link href="css/style.css" type="text/css" rel="stylesheet">
 </head>
 <body>
     <div class="background-container">
         <div class="stars"></div>
         <div class="twinkling"></div>
+        <div id="comet"></div>
         <div id="gradients1" class="gradient"></div>
         <div id="gradients2" class="gradient"></div>
     </div>
     <div id="gameScreen" class="ratio-16-9 flex-center">
+        <!-- Templates are used here -->
+    </div>
+    <!-- Main Menu template -->
+    <script id="t-mainMenu" type="text/x-template">
         <div id="mainMenu" class="flex-center">
             <div id="mainPVP" class="menuItem selected">Player vs. Player</div>
             <div id="mainControls" class="menuItem">Controls</div>
         </div>
+    </script>
+    <!-- Controls Menu template -->
+    <script id="t-controlsMenu" type="text/x-template">
+        <div id="controlsMenu" class="flex-center display-none">
+            <div id="gamePadMsg" class="menuText">- GamePad not found -</div>
+            <div id="controlsContainer" class="flex-center row">
+                <div id="controlsP1" class="controlsBox blueBox flex-center">
+                    <div class="controlsBoxTitle blueText menuText">Player 1</div>
+                    <div id="P1Boost" class="controlsBoxKey menuText">Boost: </div>
+                    <div id="P1TurnL" class="controlsBoxKey menuText">Turn L: </div>
+                    <div id="P1TurnR" class="controlsBoxKey menuText">Turn R: </div>
+                    <div id="P1StrafeL" class="controlsBoxKey menuText">Strafe L: </div>
+                    <div id="P1StrafeR" class="controlsBoxKey menuText">Strafe R: </div>
+                    <div id="P1Back" class="controlsBoxKey menuText">Back: </div>
+                    <div id="P1Shoot" class="controlsBoxKey menuText">Shoot: </div>
+                    <div id="P1Special" class="controlsBoxKey menuText">Special: </div>
+                </div>
+                <div id="controlsP2" class="controlsBox redBox flex-center">
+                    <div class="controlsBoxTitle redText menuText">Player 2</div>
+                    <div id="P2Boost" class="controlsBoxKey menuText">Boost: </div>
+                    <div id="P2TurnL" class="controlsBoxKey menuText">Turn L: </div>
+                    <div id="P2TurnR" class="controlsBoxKey menuText">Turn R: </div>
+                    <div id="P2StrafeL" class="controlsBoxKey menuText">Strafe L: </div>
+                    <div id="P2StrafeR" class="controlsBoxKey menuText">Strafe R: </div>
+                    <div id="P2Back" class="controlsBoxKey menuText">Back: </div>
+                    <div id="P2Shoot" class="controlsBoxKey menuText">Shoot: </div>
+                    <div id="P2Special" class="controlsBoxKey menuText">Special: </div>
+                </div>
+            </div>
+            <div id="controlsBack" class="menuItem mb-0 p-0 selected">Back</div>
+        </div>
+    </script>
+    <!-- PVP Menu template -->
+    <script id="t-PVPMenu" type="text/x-template">
         <div id="PVPMenu" class="flex-center display-none">
             <div id="gamePadMsg" class="menuText">- <span class="blueText">Player 1</span> select Ship 1 -</div>
             <div id="spaceshipContainer" class="flex-center row">
@@ -90,36 +128,12 @@
                 <div id="PVPContinue" class="menuItem mb-0 p-0">Continue</div>
             </div>
         </div>
-        <div id="controlsMenu" class="flex-center display-none">
-            <div id="gamePadMsg" class="menuText">- GamePad not found -</div>
-            <div id="controlsContainer" class="flex-center row">
-                <div id="controlsP1" class="controlsBox blueBox flex-center">
-                    <div class="controlsBoxTitle blueText menuText">Player 1</div>
-                    <div id="P1Boost" class="controlsBoxKey menuText">Boost: </div>
-                    <div id="P1TurnL" class="controlsBoxKey menuText">Turn L: </div>
-                    <div id="P1TurnR" class="controlsBoxKey menuText">Turn R: </div>
-                    <div id="P1StrafeL" class="controlsBoxKey menuText">Strafe L: </div>
-                    <div id="P1StrafeR" class="controlsBoxKey menuText">Strafe R: </div>
-                    <div id="P1Back" class="controlsBoxKey menuText">Back: </div>
-                    <div id="P1Shoot" class="controlsBoxKey menuText">Shoot: </div>
-                    <div id="P1Special" class="controlsBoxKey menuText">Special: </div>
-                </div>
-                <div id="controlsP2" class="controlsBox redBox flex-center">
-                    <div class="controlsBoxTitle redText menuText">Player 2</div>
-                    <div id="P2Boost" class="controlsBoxKey menuText">Boost: </div>
-                    <div id="P2TurnL" class="controlsBoxKey menuText">Turn L: </div>
-                    <div id="P2TurnR" class="controlsBoxKey menuText">Turn R: </div>
-                    <div id="P2StrafeL" class="controlsBoxKey menuText">Strafe L: </div>
-                    <div id="P2StrafeR" class="controlsBoxKey menuText">Strafe R: </div>
-                    <div id="P2Back" class="controlsBoxKey menuText">Back: </div>
-                    <div id="P2Shoot" class="controlsBoxKey menuText">Shoot: </div>
-                    <div id="P2Special" class="controlsBoxKey menuText">Special: </div>
-                </div>
-            </div>
-            <div id="controlsBack" class="menuItem mb-0 p-0 selected">Back</div>
-        </div>
-    </div>
-    <canvas id="gameCanvas" class="display-none" width="1920" height="1080"></canvas>
+    </script>
+    <!-- Game Canvas template -->
+    <script id="t-gameCanvas" type="text/x-template">
+        <canvas id="gameCanvas" width="1920" height="1080"></canvas>
+    </script>
+    <!-- Game logic files -->
     <script src="js/entities.js"></script>
     <script src="js/physics.js"></script>
     <script src="js/controls.js"></script>

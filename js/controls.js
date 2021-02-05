@@ -1,7 +1,3 @@
-
-document.addEventListener('keydown', keydownManager);
-document.addEventListener('keyup', keyupManager);
-
 const keydownManager = (e) => {
     switch (e.key) {
         case "ArrowLeft":
@@ -124,3 +120,6 @@ const gamepadHandler = () => {
     player2.ar = gp.buttons[7].pressed;
     player2.shooting = gp.buttons[2].pressed;
 }
+
+document.addEventListener('keydown', keydownManager);
+document.addEventListener('keyup', keyupManager);
