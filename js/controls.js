@@ -1,15 +1,8 @@
 
-var map = {}; // You could also use an array
-onkeydown = onkeyup = function(e){
-    e = e || event; // to deal with IE
-    map[e.keyCode] = e.type == 'keydown';
-    /* insert conditional here */
-}
-
 document.addEventListener('keydown', keydownManager);
 document.addEventListener('keyup', keyupManager);
 
-function keydownManager (e) {
+const keydownManager = (e) => {
     switch (e.key) {
         case "ArrowLeft":
             player1.va = -3.4;
@@ -60,7 +53,7 @@ function keydownManager (e) {
             break;
     }
 }
-function keyupManager (e) {
+const keyupManager = (e) => {
     switch (e.key) {
         case "ArrowLeft":
             player1.va = 0;
@@ -112,7 +105,7 @@ function keyupManager (e) {
     }
 }
 
-function gamepadHandler(){
+const gamepadHandler = () => {
     let gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
     let gp = gamepads[0];
     if (!gamepads || gamepads[0]==null || gp.buttons.length<15) {

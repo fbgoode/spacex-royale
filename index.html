@@ -15,11 +15,11 @@
         <div id="gradients2" class="gradient"></div>
     </div>
     <div id="gameScreen" class="ratio-16-9 flex-center">
-        <div id="mainMenu" class="flex-center display-none">
+        <div id="mainMenu" class="flex-center">
             <div id="mainPVP" class="menuItem selected">Player vs. Player</div>
             <div id="mainControls" class="menuItem">Controls</div>
         </div>
-        <div id="PVPMenu" class="flex-center">
+        <div id="PVPMenu" class="flex-center display-none">
             <div id="gamePadMsg" class="menuText">- <span class="blueText">Player 1</span> select Ship 1 -</div>
             <div id="spaceshipContainer" class="flex-center row">
                 <div id="spaceshipStats" class="stats flex-center whiteBox menuSquare opacity-1">
@@ -34,9 +34,9 @@
                         <div class="statText menuText">GAS</div><div class="statBarMax"><div id="weaponStatFRQ" class="statBar statBarB"></div></div>
                     </div>
                 </div>
-                <div id="spaceship1" class="whiteBox menuSquare shipBlue"></div>
-                <div id="spaceship2" class="whiteBox menuSquare shipBlue"></div>
-                <div id="spaceship3" class="whiteBox menuSquare shipBlue"></div>
+                <div id="spaceship1" class="spaceship1 whiteBox menuSquare shipBlue blueBox opacity-1"></div>
+                <div id="spaceship2" class="spaceship2 whiteBox menuSquare shipBlue"></div>
+                <div id="spaceship3" class="spaceship3 whiteBox menuSquare shipBlue"></div>
             </div>
             <div id="weaponContainer" class="flex-center row opacity-03">
                 <div id="weaponStats" class="stats flex-center whiteBox menuSquare opacity-1">
@@ -57,13 +57,32 @@
             </div>
             <div id="teamsContainer" class="flex-center row">
                 <div id="team1Container" class="flex-center row teamSquare blueBox">
-                    <div class="teamShipContainer flex-center">
-                        <div id="team1Weapon1"></div>
-                        <div id="team1Ship1"></div>
+                    <div class="teamShipContainer flex-center not-selected">
+                        <div id="team1Weapon1" class="teamWeapon weaponDouble weaponBlue"><div></div><div></div></div>
+                        <div id="team1Ship1" class="teamShip spaceship2 shipBlue"></div>
+                    </div>
+                    <div class="teamShipContainer flex-center not-selected">
+                        <div id="team1Weapon1" class="teamWeapon weaponDouble weaponBlue"><div></div><div></div></div>
+                        <div id="team1Ship1" class="teamShip spaceship2 shipBlue"></div>
+                    </div>
+                    <div class="teamShipContainer flex-center not-selected">
+                        <div id="team1Weapon1" class="teamWeapon weaponDouble weaponBlue"><div></div><div></div></div>
+                        <div id="team1Ship1" class="teamShip spaceship2 shipBlue"></div>
                     </div>
                 </div>
                 <div id="team2Container" class="flex-center row teamSquare redBox">
-
+                    <div class="teamShipContainer flex-center not-selected">
+                        <div id="team1Weapon1" class="teamWeapon weaponDouble weaponRed"><div></div><div></div></div>
+                        <div id="team1Ship1" class="teamShip spaceship2 shipRed"></div>
+                    </div>
+                    <div class="teamShipContainer flex-center not-selected">
+                        <div id="team1Weapon1" class="teamWeapon weaponDouble weaponRed"><div></div><div></div></div>
+                        <div id="team1Ship1" class="teamShip spaceship2 shipRed"></div>
+                    </div>
+                    <div class="teamShipContainer flex-center not-selected">
+                        <div id="team1Weapon1" class="teamWeapon weaponDouble weaponRed"><div></div><div></div></div>
+                        <div id="team1Ship1" class="teamShip spaceship2 shipRed"></div>
+                    </div>
                 </div>
             </div>
             <div class="flex-center row space-between">
