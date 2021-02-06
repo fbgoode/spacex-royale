@@ -30,7 +30,7 @@ body {
     color: white;
     text-shadow: 0 0 6vmin white,
     0 0 1vmin rgba(255,255,255,0.7);
-    padding-bottom:5vmin;
+    padding-bottom:0;
     margin: 2vmin 0;
     cursor: default;
     user-select: none;
@@ -145,11 +145,6 @@ body {
 .gradient {
     transition: opacity 7s;
     z-index: 3;
-}
-
-.stars {
-    background: url('/img/stars.png') repeat;
-    z-index: 0;
 }
 
 .twinkling{
@@ -374,20 +369,48 @@ body {
     background-position: center;
 }
 
+.noTransform {
+    transform: translateY(0)!important;
+}
+
+.moveUp {
+    transform:translateY(-4320px);
+}
+
+.moveDown {
+    transform:translateY(4320px);
+}
+
+.bgDown {
+    background-position-y: 4320px!important;
+}
+
+.display-block {
+    display:block!important;
+}
+
 /* IDs */
 
 #gameCanvas {
-    display: block;
+    display:block;
+    position:absolute;
     margin: auto;
     max-width:100%;
     max-height:100%;
     width:auto;
     height:auto;
-	z-index: 10;
+    z-index: 10;
+    transition:transform 4s ease;
+    border: 0.2vmin solid rgb(255, 253, 118);
+    box-shadow: 0 0 0.2vmin 0.2vmin rgba(255, 254, 185, 0.7),
+    inset 0 0 0.2vmin 0.2vmin rgba(255, 254, 185,0.7),
+    0 0 1.5vmin 0.2vmin rgba(255, 255, 255, 0.8),
+    inset 0 0 1.5vmin 0.2vmin rgba(255,255,255,0.8);
 }
 
 #gameScreen {
     z-index: 11;
+    transition:transform 4s ease;
 }
 
 #mainMenu {
@@ -423,6 +446,12 @@ body {
     border-radius: 1vmin;
     opacity:0;
     animation: comet-appear 0.6s linear 2s;
+}
+
+#stars {
+    background: url('/img/stars.png') repeat;
+    z-index: 0;
+    transition:background-position 4s ease;
 }
 
 /* Media */

@@ -9,7 +9,7 @@
 </head>
 <body>
     <div class="background-container">
-        <div class="stars"></div>
+        <div id="stars" class="stars"></div>
         <div class="twinkling"></div>
         <div id="comet"></div>
         <div id="gradients1" class="gradient"></div>
@@ -18,6 +18,7 @@
     <div id="gameScreen" class="ratio-16-9 flex-center">
         <!-- Templates are used here -->
     </div>
+    <canvas id="gameCanvas" class="moveUp display-none" width="1920" height="1080"></canvas>
     <!-- Main Menu template -->
     <script id="t-mainMenu" type="text/x-template">
         <div id="mainMenu" class="flex-center">

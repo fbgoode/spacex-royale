@@ -4,8 +4,8 @@ let app = {
         document.addEventListener('keydown', (e) => {app.controlsManager.kdmDelegate(e)});
         document.addEventListener('keyup', (e) => {app.controlsManager.kumDelegate(e)});
         window.addEventListener('gamepadconnected', () => {if(!app.controlsManager.looping) app.controlsManager.gpListen();});
-        app.menu = new Menu("t-mainMenu","gameScreen",app.menuItems.mainMenu);
-        app.controlsManager.KBM = app.menu;
+        app.doAction("toMainMenu");
+        setTimeout(()=>{canvas.classList.remove("display-none")},1000);
     },
     doAction: (id) => {
         switch (id) {
@@ -21,14 +21,25 @@ let app = {
                 app.showControls();
                 break;
             case "controlsBack":
-                app.menu = new Menu("t-mainMenu","gameScreen",app.menuItems.mainMenu);
-                app.controlsManager.KBM = app.menu;
+                app.doAction("toMainMenu");
                 break;
             case "toMainMenu":
                 app.menu = new Menu("t-mainMenu","gameScreen",app.menuItems.mainMenu);
                 app.controlsManager.KBM = app.menu;
                 break;
+            case "PVPContinue":
+                let gameScreen = document.getElementById("gameScreen");
+                let gameCanvas = document.getElementById("gameCanvas");
+                let stars = document.getElementById("stars");
+                gameScreen.classList.add("moveDown");
+                gameCanvas.classList.add("noTransform");
+                stars.classList.add("bgDown");
+                setTimeout(app.startPVP,4000);
+                break;
         }
+    },
+    startPVP: () => {
+        console.log("Starting Game");
     },
     showControls: () => {
         for (let key in app.gameControls) {
@@ -427,4 +438,6 @@ let app = {
     }
 }
 
+let canvas = document.getElementById("gameCanvas");
+let ctx = canvas.getContext("2d");
 app.init();
