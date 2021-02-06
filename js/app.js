@@ -1,15 +1,32 @@
 let app = {
+    init: () => {
+        app.controlsManager = new ControlsManager(noControls);
+        document.addEventListener('keydown', (e) => {app.controlsManager.kdmDelegate(e)});
+        document.addEventListener('keyup', (e) => {app.controlsManager.kumDelegate(e)});
+        window.addEventListener('gamepadconnected', () => {if(!app.controlsManager.looping) app.controlsManager.gpListen();});
+        app.menu = new Menu("t-mainMenu","gameScreen",app.menuItems.mainMenu);
+        app.controlsManager.KBM = app.menu;
+    },
     doAction: (id) => {
         switch (id) {
             case "mainPVP":
-                app.menu = new Menu("t-PVPMenu","gameScreen",app.menuItems.PVPMenu);
+                app.menu = new Menu("t-PVPMenu","gameScreen",app.menuItems.PVPMenu,
+                (selectionId)=>{app.PVPStatsUpdate(selectionId)},
+                (selectionId)=>{app.PVPUpdate(selectionId)});
+                app.controlsManager.KBM = app.menu;
                 break;
             case "mainControls":
                 app.menu = new Menu("t-controlsMenu","gameScreen",app.menuItems.controlsMenu);
+                app.controlsManager.KBM = app.menu;
                 app.showControls();
                 break;
             case "controlsBack":
                 app.menu = new Menu("t-mainMenu","gameScreen",app.menuItems.mainMenu);
+                app.controlsManager.KBM = app.menu;
+                break;
+            case "toMainMenu":
+                app.menu = new Menu("t-mainMenu","gameScreen",app.menuItems.mainMenu);
+                app.controlsManager.KBM = app.menu;
                 break;
         }
     },
@@ -18,10 +35,306 @@ let app = {
             document.getElementById(key).innerHTML = key.substr(2,key.length-2) + ": " + app.gameControls[key];
         }
     },
+    game: {
+        Teams: [[["",""],["",""],["",""]],[["",""],["",""],["",""]]]
+    },
+    sel: "P1S1",
+    PVPUpdate: (selectionId) => {
+        let msg = document.getElementById("PVPMsg");
+        let spaceshipContainer = document.getElementById("spaceshipContainer");
+        let weaponContainer = document.getElementById("weaponContainer");
+        const changeColors= (color) => {
+            let spaceship1 = document.getElementById("spaceship1");
+            let spaceship2 = document.getElementById("spaceship2");
+            let spaceship3 = document.getElementById("spaceship3");
+            let weapon1 = document.getElementById("weapon1");
+            let weapon2 = document.getElementById("weapon2");
+            let weapon3 = document.getElementById("weapon3");
+            let sc1 = "shipBlue";
+            let sc2 = "shipRed";
+            let wc1 = "weaponBlue";
+            let wc2 = "weaponRed";
+            if (color=="blue") {
+                sc1 = "shipRed";
+                sc2 = "shipBlue";
+                wc1 = "weaponRed";
+                wc2 = "weaponBlue";
+            }
+            spaceship1.classList.remove(sc1);
+            spaceship1.classList.add(sc2);
+            spaceship2.classList.remove(sc1);
+            spaceship2.classList.add(sc2);
+            spaceship3.classList.remove(sc1);
+            spaceship3.classList.add(sc2);
+            weapon1.classList.remove(wc1);
+            weapon1.classList.add(wc2);
+            weapon2.classList.remove(wc1);
+            weapon2.classList.add(wc2);
+            weapon3.classList.remove(wc1);
+            weapon3.classList.add(wc2);
+        };
+        const selectShip = (id) => {
+            spaceshipContainer.classList.add("opacity-03");
+            weaponContainer.classList.remove("opacity-03");
+            let ship = document.getElementById(id);
+            ship.classList.remove("spaceship2");
+            ship.classList.remove("not-selected");
+            ship.classList.add(selectionId);
+        };
+        const removeShip = (id) => {
+            spaceshipContainer.classList.remove("opacity-03");
+            weaponContainer.classList.add("opacity-03");
+            let ship = document.getElementById(id);
+            ship.classList.add("not-selected");
+            ship.classList.remove("spaceship1","spaceship2");
+            ship.classList.add("spaceship2");
+        };
+        const selectWeapon = (id) => {
+            spaceshipContainer.classList.remove("opacity-03");
+            weaponContainer.classList.add("opacity-03");
+            let weapon = document.getElementById(id);
+            weapon.innerHTML=`<div class="${selectionId} weapon"><div></div><div></div></div>`;
+            weapon.classList.remove("not-selected");
+        };
+        const removeWeapon = (id) => {
+            spaceshipContainer.classList.add("opacity-03");
+            weaponContainer.classList.remove("opacity-03");
+            let weapon = document.getElementById(id);
+            weapon.innerHTML=`<div class="weapon2 weapon"><div></div><div></div></div>`;
+            weapon.classList.add("not-selected");
+        };
+        if (selectionId=="PVPBack") {
+            switch (app.sel) {
+                case "P1S1":
+                    app.doAction("toMainMenu");
+                    break;
+                case "P1W1":
+                    app.game.Teams[0][0][0] = "";
+                    removeShip("team1Ship1");
+                    app.menu.resetItems(app.menuItems.PVPMenu);
+                    msg.innerHTML = `- <span class="blueText">Player 1</span> select Ship 1 -`;
+                    app.sel = "P1S1";
+                    break;
+                case "P2S1":
+                    app.game.Teams[0][0][1] = "";
+                    removeWeapon("team1Weapon1");
+                    app.menu.resetItems(app.menuItems.PVPMenuW);
+                    msg.innerHTML = `- <span class="blueText">Player 1</span> select Weapon 1 -`;
+                    app.sel = "P1W1";
+                    changeColors("blue");
+                    break;
+                case "P2W1":
+                    app.game.Teams[1][0][0] = "";
+                    removeShip("team2Ship1");
+                    app.menu.resetItems(app.menuItems.PVPMenu);
+                    msg.innerHTML = `- <span class="redText">Player 2</span> select Ship 1 -`;
+                    app.sel = "P2S1";
+                    break;
+                case "P2S2":
+                    app.game.Teams[1][0][1] = "";
+                    removeWeapon("team2Weapon1");
+                    app.menu.resetItems(app.menuItems.PVPMenuW);
+                    msg.innerHTML = `- <span class="redText">Player 2</span> select Weapon 1 -`;
+                    app.sel = "P2W1";
+                    break;
+                case "P2W2":
+                    app.game.Teams[1][1][0] = "";
+                    removeShip("team2Ship2");
+                    app.menu.resetItems(app.menuItems.PVPMenu);
+                    msg.innerHTML = `- <span class="redText">Player 2</span> select Ship 2 -`;
+                    app.sel = "P2S2";
+                    break;
+                case "P1S2":
+                    app.game.Teams[1][1][1] = "";
+                    removeWeapon("team2Weapon2");
+                    app.menu.resetItems(app.menuItems.PVPMenuW);
+                    msg.innerHTML = `- <span class="redText">Player 2</span> select Weapon 2 -`;
+                    app.sel = "P2W2";
+                    changeColors("red");
+                    break;
+                case "P1W2":
+                    app.game.Teams[0][1][0] = "";
+                    removeShip("team1Ship2");
+                    app.menu.resetItems(app.menuItems.PVPMenu);
+                    msg.innerHTML = `- <span class="blueText">Player 1</span> select Ship 2 -`;
+                    app.sel = "P1S2";
+                    break;
+                case "P1S3":
+                    app.game.Teams[0][1][1] = "";
+                    removeWeapon("team1Weapon2");
+                    app.menu.resetItems(app.menuItems.PVPMenuW);
+                    msg.innerHTML = `- <span class="blueText">Player 1</span> select Weapon 2 -`;
+                    app.sel = "P1W2";
+                    break;
+                case "P1W3":
+                    app.game.Teams[0][2][0] = "";
+                    removeShip("team1Ship3");
+                    app.menu.resetItems(app.menuItems.PVPMenu);
+                    msg.innerHTML = `- <span class="blueText">Player 1</span> select Ship 3 -`;
+                    app.sel = "P1S3";
+                    break;
+                case "P2S3":
+                    app.game.Teams[0][2][1] = "";
+                    removeWeapon("team1Weapon3");
+                    app.menu.resetItems(app.menuItems.PVPMenuW);
+                    msg.innerHTML = `- <span class="blueText">Player 1</span> select Weapon 3 -`;
+                    app.sel = "P1W3";
+                    changeColors("blue");
+                    break;
+                case "P2W3":
+                    app.game.Teams[1][2][0] = "";
+                    removeShip("team2Ship3");
+                    app.menu.resetItems(app.menuItems.PVPMenu);
+                    msg.innerHTML = `- <span class="redText">Player 2</span> select Ship 3 -`;
+                    app.sel = "P2S3";
+                    break;
+                case "ready":
+                    app.game.Teams[1][2][1] = "";
+                    removeWeapon("team2Weapon3");
+                    app.menu.resetItems(app.menuItems.PVPMenuW);
+                    document.getElementById("PVPContinue").classList.add("opacity-03");
+                    msg.innerHTML = `- <span class="redText">Player 2</span> select Weapon 3 -`;
+                    app.sel = "P2W3";
+                    break;
+            }
+        } else {
+            switch (app.sel) {
+                case "P1S1":
+                    app.game.Teams[0][0][0] = selectionId;
+                    selectShip("team1Ship1");
+                    app.menu.resetItems(app.menuItems.PVPMenuW);
+                    msg.innerHTML = `- <span class="blueText">Player 1</span> select Weapon 1 -`;
+                    app.sel = "P1W1";
+                    break;
+                case "P1W1":
+                    app.game.Teams[0][0][1] = selectionId;
+                    selectWeapon("team1Weapon1");
+                    app.menu.resetItems(app.menuItems.PVPMenu);
+                    msg.innerHTML = `- <span class="redText">Player 2</span> select Ship 1 -`;
+                    app.sel = "P2S1";
+                    changeColors("red");
+                    break;
+                case "P2S1":
+                    app.game.Teams[1][0][0] = selectionId;
+                    selectShip("team2Ship1");
+                    app.menu.resetItems(app.menuItems.PVPMenuW);
+                    msg.innerHTML = `- <span class="redText">Player 2</span> select Weapon 1 -`;
+                    app.sel = "P2W1";
+                    break;
+                case "P2W1":
+                    app.game.Teams[1][0][1] = selectionId;
+                    selectWeapon("team2Weapon1");
+                    app.menu.resetItems(app.menuItems.PVPMenu);
+                    msg.innerHTML = `- <span class="redText">Player 2</span> select Ship 2 -`;
+                    app.sel = "P2S2";
+                    break;
+                case "P2S2":
+                    app.game.Teams[1][1][0] = selectionId;
+                    selectShip("team2Ship2");
+                    app.menu.resetItems(app.menuItems.PVPMenuW);
+                    msg.innerHTML = `- <span class="redText">Player 2</span> select Weapon 2 -`;
+                    app.sel = "P2W2";
+                    break;
+                case "P2W2":
+                    app.game.Teams[1][1][1] = selectionId;
+                    selectWeapon("team2Weapon2");
+                    app.menu.resetItems(app.menuItems.PVPMenu);
+                    msg.innerHTML = `- <span class="blueText">Player 1</span> select Ship 2 -`;
+                    app.sel = "P1S2";
+                    changeColors("blue");
+                    break;
+                case "P1S2":
+                    app.game.Teams[0][1][0] = selectionId;
+                    selectShip("team1Ship2");
+                    app.menu.resetItems(app.menuItems.PVPMenuW);
+                    msg.innerHTML = `- <span class="blueText">Player 1</span> select Weapon 2 -`;
+                    app.sel = "P1W2";
+                    break;
+                case "P1W2":
+                    app.game.Teams[0][1][1] = selectionId;
+                    selectWeapon("team1Weapon2");
+                    app.menu.resetItems(app.menuItems.PVPMenu);
+                    msg.innerHTML = `- <span class="blueText">Player 1</span> select Ship 3 -`;
+                    app.sel = "P1S3";
+                    break;
+                case "P1S3":
+                    app.game.Teams[0][2][0] = selectionId;
+                    selectShip("team1Ship3");
+                    app.menu.resetItems(app.menuItems.PVPMenuW);
+                    msg.innerHTML = `- <span class="blueText">Player 1</span> select Weapon 3 -`;
+                    app.sel = "P1W3";
+                    break;
+                case "P1W3":
+                    app.game.Teams[0][2][1] = selectionId;
+                    selectWeapon("team1Weapon3");
+                    app.menu.resetItems(app.menuItems.PVPMenu);
+                    msg.innerHTML = `- <span class="redText">Player 2</span> select Ship 3 -`;
+                    app.sel = "P2S3";
+                    changeColors("red");
+                    break;
+                case "P2S3":
+                    app.game.Teams[1][2][0] = selectionId;
+                    selectShip("team2Ship3");
+                    app.menu.resetItems(app.menuItems.PVPMenuW);
+                    msg.innerHTML = `- <span class="redText">Player 2</span> select Weapon 3 -`;
+                    app.sel = "P2W3";
+                    break;
+                case "P2W3":
+                    app.game.Teams[1][2][1] = selectionId;
+                    selectWeapon("team2Weapon3");
+                    spaceshipContainer.classList.add("opacity-03");
+                    app.menu.resetItems([["PVPBack","PVPContinue"]],0,1);
+                    document.getElementById("PVPContinue").classList.remove("opacity-03");
+                    msg.innerHTML = `- Ready? -`;
+                    app.sel = "ready";
+                    break;
+            }
+        }
+    },
+    PVPStatsUpdate: (selectionId) => {
+        let spaceshipName = document.getElementById("spaceshipName");
+        let spaceshipStatHP = document.getElementById("spaceshipStatHP");
+        let spaceshipStatSPD = document.getElementById("spaceshipStatSPD");
+        let spaceshipStatGAS = document.getElementById("spaceshipStatGAS");
+        let weaponName = document.getElementById("weaponName");
+        let weaponStatDMG = document.getElementById("weaponStatDMG");
+        let weaponStatSPD = document.getElementById("weaponStatSPD");
+        let weaponStatFRQ = document.getElementById("weaponStatFRQ");
+        let type = selectionId.substr(0,selectionId.length-1);
+        if(type=="spaceship") {
+            spaceshipName.innerHTML=app.ships[selectionId].name;
+            spaceshipStatHP.style.width = `${(~~(app.ships[selectionId].HP/app.ships.shipmax.HP*100))}%`;
+            spaceshipStatSPD.style.width = `${(~~(app.ships[selectionId].boost/app.ships.shipmax.boost*100))}%`;
+            spaceshipStatGAS.style.width = `${(~~(app.ships[selectionId].gas/app.ships.shipmax.gas*100))}%`;
+            weaponName.innerHTML="Weapon";
+            weaponStatDMG.style.width = "0";
+            weaponStatSPD.style.width = "0";
+            weaponStatFRQ.style.width = "0";
+        } else if(type=="weapon") {
+            spaceshipName.innerHTML="Ship";
+            spaceshipStatHP.style.width = "0";
+            spaceshipStatSPD.style.width = "0";
+            spaceshipStatGAS.style.width = "0";
+            weaponName.innerHTML=app.weapons[selectionId].name;
+            weaponStatDMG.style.width = `${(~~(app.weapons[selectionId].dmg/app.weapons.weaponmax.dmg*100))}%`;
+            weaponStatSPD.style.width = `${(~~(app.weapons[selectionId].v/app.weapons.weaponmax.v*100))}%`;
+            weaponStatFRQ.style.width = `${(~~(app.weapons.weaponmax.freq/app.weapons[selectionId].freq*100))}%`;
+        } else {
+            spaceshipName.innerHTML="Ship";
+            spaceshipStatHP.style.width = "0";
+            spaceshipStatSPD.style.width = "0";
+            spaceshipStatGAS.style.width = "0";
+            weaponName.innerHTML="Weapon";
+            weaponStatDMG.style.width = "0";
+            weaponStatSPD.style.width = "0";
+            weaponStatFRQ.style.width = "0";
+        }
+    },
     menuItems: {
         mainMenu: [["mainPVP"],["mainControls"]],
         controlsMenu: [["controlsBack"]],
-        PVPMenu: [[]]
+        PVPMenu: [["spaceship1","spaceship2","spaceship3"],["PVPBack"]],
+        PVPMenuW: [["weapon1","weapon2","weapon3"],["PVPBack"]]
     },
     gameControls: {
         P1Boost:"ArrowUp",
@@ -58,209 +371,60 @@ let app = {
         P2Back:"GP0[14]",
         P2Shoot:"GP0[2]",
         P2Special:"GP0[3]"
+    },
+    ships: {
+        shipmax: {
+            HP: 650,
+            boost: 2400,
+            gas: 1200
+        },
+        spaceship1: {
+            name: "Tincan",
+            HP: 500,
+            boost: 1800,
+            gas: 800
+        },
+        spaceship2: {
+            name: "Trooper",
+            HP: 350,
+            boost: 2400,
+            gas: 1200
+        },
+        spaceship3: {
+            name: "Heavy",
+            HP: 650,
+            boost: 1200,
+            gas: 400
+        }
+    },
+    weapons: {
+        weaponmax: {
+            v: 3000,
+            freq: 0.15,
+            dmg: 40
+        },
+        weapon1: {
+            name: "Classic",
+            v: 1200,
+            type: 'single',
+            freq: 0.2,
+            dmg: 15
+        },
+        weapon2: {
+            name: "Double",
+            v: 800,
+            type: 'double',
+            freq: 0.15,
+            dmg: 8
+        },
+        weapon3: {
+            name: "Cannon",
+            v: 3000,
+            type: 'single',
+            freq: 1.5,
+            dmg: 40
+        }
     }
 }
 
-class Screen {
-    constructor (tempid,containerid) {
-        let temp = document.getElementById(tempid);
-        let container = document.getElementById(containerid);
-        container.innerHTML = temp.innerHTML;
-    }
-}
-
-class Menu extends Screen {
-    constructor (tempid,containerid,menuItemIds = [[]]) {
-        super(tempid,containerid);
-        this.menuItemIds = menuItemIds;
-        this.menuItems = [];
-        this.row = 0;
-        this.col = 0;
-        for (let i=0; i < this.menuItemIds.length; i++) {
-            this.menuItems.push([]);
-            for (let j=0; j < this.menuItemIds[i].length; j++) {
-                this.menuItems[i].push(document.getElementById(this.menuItemIds[i][j]));
-                this.menuItems[i][j].onmouseover = (event) => {app.menu.mMoveTo(event.target.id);};
-                this.menuItems[i][j].onclick = () => {app.menu.select();};
-            }
-        }
-        this.selectionId = this.menuItemIds[0][0];
-        this.selection = this.menuItems[0][0];
-        controlsManager.KBM = this;
-    }
-    keydownManager(e) {
-        let key = e.key;
-        if (key.length==1 && /^[a-x]*$/.test(key)) key=key.toUpperCase();
-        let action="";
-        if (e.key=="Enter") action="Shoot";
-        for (let i in app.gameControls) {
-            if (app.gameControls[i]==key) {
-                action=i;
-                break;
-            }
-        }
-        switch(action) {
-            case "P1TurnL":
-            case "P2TurnL":
-            case "P1StrafeL":
-            case "P2StrafeL":
-                this.mLeft();
-                break;
-            case "P1TurnR":
-            case "P2TurnR":
-            case "P1StrafeR":
-            case "P2StrafeR":
-                this.mRight();
-                break;
-            case "P1Boost":
-            case "P2Boost":
-                this.mUp();
-                break;
-            case "P1Back":
-            case "P2Back":
-                this.mDown();
-                break;
-            case "P1Shoot":
-            case "P2Shoot":
-            case "Shoot":
-                this.select();
-                break;
-        }
-    }
-    keyupManager(e) {
-
-    }
-    mLeft() {
-        if (this.col>0) {
-            this.mMove(this.row,this.col-1);
-        } else if (this.row>0) {
-            this.mMove(this.row-1,this.menuItems[this.row-1].length-1);
-        }
-    }
-    mUp() {
-        if (this.row>0) {
-            let newcol = (~~(this.menuItems[this.row-1].length*((this.col+1)/this.menuItems[this.row].length)))-1;
-            this.mMove(this.row-1,newcol);
-        } else if (this.col>0) {
-            this.mMove(this.row,this.col-1);
-        }
-    }
-    mRight() {
-        if (this.col < this.menuItems[this.row].length-1) {
-            this.mMove(this.row,this.col+1);
-        } else if (this.row < this.menuItems.length-1) {
-            this.mMove(this.row+1,0);
-        }
-    }
-    mDown() {
-        if (this.row < this.menuItems.length-1) {
-            let newcol = (~~(this.menuItems[this.row+1].length*((this.col+1)/this.menuItems[this.row].length)))-1;
-            this.mMove(this.row+1,newcol);
-        } else if (this.col < this.menuItems[this.row].length-1) {
-            this.mMove(this.row,this.col+1);
-        }
-    }
-    mMove(row,col) {
-        this.selection.classList.remove("selected");
-        this.row = row;
-        this.col = col;
-        this.selectionId = this.menuItemIds[row][col];
-        this.selection = this.menuItems[row][col];
-        this.selection.classList.add("selected");
-    }
-    mMoveTo(item) {
-        for (let i=0; i < this.menuItemIds.length; i++) {
-            for (let j=0; j < this.menuItemIds[i].length; j++) {
-                if (item == this.menuItemIds[i][j]) {
-                    this.selection.classList.remove("selected");
-                    this.row = i;
-                    this.col = j;
-                    this.selectionId = item;
-                    this.selection = this.menuItems[i][j];
-                    this.selection.classList.add("selected");
-                    return;
-                }
-            }
-        }
-    }
-    select() {
-        app.doAction(this.selectionId);
-    }
-}
-
-class Game extends Screen {
-
-}
-
-class ControlsManager {
-    constructor(KBM) {
-        this.KBM = KBM;
-        this.looping = false;
-        this.loop = {};
-        this.gpButtons = {0:{0:false}};
-    }
-    kdmDelegate(e) {
-        this.KBM.keydownManager(e);
-    }
-    kumDelegate(e) {
-        this.KBM.keyupManager(e);
-    }
-    gpupManager(e) {
-        e=this.mapKey(e);
-        if (e) {
-            this.kumDelegate({key:e});
-        }
-    }
-    gpdownManager(e) {
-        e=this.mapKey(e);
-        if (e) {
-            this.kdmDelegate({key:e});
-        }
-    }
-    mapKey(e) {
-        for (let key in app.gameControlsGP) {
-            if (app.gameControlsGP[key]==e) {
-                return app.gameControls[key];
-            }
-        }
-        return false;
-    }
-    gpListen() {
-        this.loop = setInterval(() => {controlsManager.gpLoop();},16);
-        this.looping = true;
-    }
-    gpLoop() {
-        let gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
-        let stop = true;
-        for (let i=0; i<gamepads.length; i++) {
-            if (gamepads[i] != null) {
-                stop = false;
-                for (let j=0; j<gamepads[i].buttons.length; j++) {
-                    if (!this.gpButtons[i][j] && gamepads[i].buttons[j].pressed){
-                        this.gpdownManager("GP"+i+"["+j+"]");
-                        this.gpButtons[i][j]=true;
-                    } else if (this.gpButtons[i][j] && !gamepads[i].buttons[j].pressed) {
-                        this.gpupManager("GP"+i+"["+j+"]");
-                        this.gpButtons[i][j]=false;
-                    }
-                }
-            }
-        }
-        if (stop) this.gpStop();
-    }
-    gpStop() {
-        clearInterval(this.loop);
-        this.looping = false;
-    }
-}
-
-let noControls = {
-    keydownManager : (e) => {},
-    keyupManager : (e) => {}
-};
-
-let controlsManager = new ControlsManager(noControls);
-document.addEventListener('keydown', (e) => {controlsManager.kdmDelegate(e)});
-document.addEventListener('keyup', (e) => {controlsManager.kumDelegate(e)});
-window.addEventListener('gamepadconnected', () => {if(!controlsManager.looping) controlsManager.gpListen();});
-app.menu = new Menu("t-mainMenu","gameScreen",app.menuItems.mainMenu);
+app.init();

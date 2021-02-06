@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpaceX Royale</title>
     <link href="css/style.css" type="text/css" rel="stylesheet">
+    <link rel="shortcut icon" href="img/ship2-b.svg">
 </head>
 <body>
     <div class="background-container">
@@ -58,27 +59,27 @@
     <!-- PVP Menu template -->
     <script id="t-PVPMenu" type="text/x-template">
         <div id="PVPMenu" class="flex-center">
-            <div id="gamePadMsg" class="menuText">- <span class="blueText">Player 1</span> select Ship 1 -</div>
+            <div id="PVPMsg" class="menuText">- <span class="blueText">Player 1</span> select Ship 1 -</div>
             <div id="spaceshipContainer" class="flex-center row">
                 <div id="spaceshipStats" class="stats flex-center whiteBox menuSquare opacity-1">
-                    <div class="statTitle menuText">Tincan</div>
+                    <div id="spaceshipName" class="statTitle menuText">Tincan</div>
                     <div class="flex-center row w-100">
-                        <div class="statText menuText">HP</div><div class="statBarMax"><div id="weaponStatDMG" class="statBar statBarR"></div></div>
+                        <div class="statText menuText">HP</div><div class="statBarMax"><div id="spaceshipStatHP" class="statBar statBarR"></div></div>
                     </div>
                     <div class="flex-center row w-100">
-                        <div class="statText menuText">SPD</div><div class="statBarMax"><div id="weaponStatSPD" class="statBar statBarG"></div></div>
+                        <div class="statText menuText">SPD</div><div class="statBarMax"><div id="spaceshipStatSPD" class="statBar statBarG"></div></div>
                     </div>
                     <div class="flex-center row w-100">
-                        <div class="statText menuText">GAS</div><div class="statBarMax"><div id="weaponStatFRQ" class="statBar statBarB"></div></div>
+                        <div class="statText menuText">GAS</div><div class="statBarMax"><div id="spaceshipStatGAS" class="statBar statBarB"></div></div>
                     </div>
                 </div>
-                <div id="spaceship1" class="spaceship1 whiteBox menuSquare shipBlue blueBox opacity-1"></div>
+                <div id="spaceship1" class="spaceship1 whiteBox menuSquare shipBlue selected"></div>
                 <div id="spaceship2" class="spaceship2 whiteBox menuSquare shipBlue"></div>
                 <div id="spaceship3" class="spaceship3 whiteBox menuSquare shipBlue"></div>
             </div>
             <div id="weaponContainer" class="flex-center row opacity-03">
                 <div id="weaponStats" class="stats flex-center whiteBox menuSquare opacity-1">
-                    <div class="statTitle menuText">Single</div>
+                    <div id="weaponName" class="statTitle menuText">Classic</div>
                     <div class="flex-center row w-100">
                         <div class="statText menuText">DMG</div><div class="statBarMax"><div id="weaponStatDMG" class="statBar statBarR"></div></div>
                     </div>
@@ -89,37 +90,37 @@
                         <div class="statText menuText">FRQ</div><div class="statBarMax"><div id="weaponStatFRQ" class="statBar statBarB"></div></div>
                     </div>
                 </div>
-                <div id="weapon1" class="whiteBox menuSquare flex-center"><div class="weaponSingle weaponBlue weapon"><div></div><div></div></div></div>
-                <div id="weapon2" class="whiteBox menuSquare flex-center"><div class="weaponDouble weaponBlue weapon"><div></div><div></div></div></div>
-                <div id="weapon3" class="whiteBox menuSquare flex-center"><div class="weaponCannon weaponBlue weapon"><div></div><div></div></div></div>
+                <div id="weapon1" class="weaponBlue whiteBox menuSquare flex-center"><div class="weapon1 weapon"><div></div><div></div></div></div>
+                <div id="weapon2" class="weaponBlue whiteBox menuSquare flex-center"><div class="weapon2 weapon"><div></div><div></div></div></div>
+                <div id="weapon3" class="weaponBlue whiteBox menuSquare flex-center"><div class="weapon3 weapon"><div></div><div></div></div></div>
             </div>
             <div id="teamsContainer" class="flex-center row">
                 <div id="team1Container" class="flex-center row teamSquare blueBox">
-                    <div class="teamShipContainer flex-center not-selected">
-                        <div id="team1Weapon1" class="teamWeapon weaponDouble weaponBlue"><div></div><div></div></div>
-                        <div id="team1Ship1" class="teamShip spaceship2 shipBlue"></div>
+                    <div class="teamShipContainer flex-center">
+                        <div id="team1Weapon1" class="teamWeapon weaponBlue not-selected"><div class="weapon2"><div></div><div></div></div></div>
+                        <div id="team1Ship1" class="teamShip spaceship2 shipBlue not-selected"></div>
                     </div>
-                    <div class="teamShipContainer flex-center not-selected">
-                        <div id="team1Weapon1" class="teamWeapon weaponDouble weaponBlue"><div></div><div></div></div>
-                        <div id="team1Ship1" class="teamShip spaceship2 shipBlue"></div>
+                    <div class="teamShipContainer flex-center">
+                        <div id="team1Weapon2" class="teamWeapon weaponBlue not-selected"><div class="weapon2"><div></div><div></div></div></div>
+                        <div id="team1Ship2" class="teamShip spaceship2 shipBlue not-selected"></div>
                     </div>
-                    <div class="teamShipContainer flex-center not-selected">
-                        <div id="team1Weapon1" class="teamWeapon weaponDouble weaponBlue"><div></div><div></div></div>
-                        <div id="team1Ship1" class="teamShip spaceship2 shipBlue"></div>
+                    <div class="teamShipContainer flex-center">
+                        <div id="team1Weapon3" class="teamWeapon weaponBlue not-selected"><div class="weapon2"><div></div><div></div></div></div>
+                        <div id="team1Ship3" class="teamShip spaceship2 shipBlue not-selected"></div>
                     </div>
                 </div>
                 <div id="team2Container" class="flex-center row teamSquare redBox">
-                    <div class="teamShipContainer flex-center not-selected">
-                        <div id="team1Weapon1" class="teamWeapon weaponDouble weaponRed"><div></div><div></div></div>
-                        <div id="team1Ship1" class="teamShip spaceship2 shipRed"></div>
+                    <div class="teamShipContainer flex-center">
+                        <div id="team2Weapon1" class="teamWeapon weaponRed not-selected"><div class="weapon2"><div></div><div></div></div></div>
+                        <div id="team2Ship1" class="teamShip spaceship2 shipRed not-selected"></div>
                     </div>
-                    <div class="teamShipContainer flex-center not-selected">
-                        <div id="team1Weapon1" class="teamWeapon weaponDouble weaponRed"><div></div><div></div></div>
-                        <div id="team1Ship1" class="teamShip spaceship2 shipRed"></div>
+                    <div class="teamShipContainer flex-center">
+                        <div id="team2Weapon2" class="teamWeapon weaponRed not-selected"><div class="weapon2"><div></div><div></div></div></div>
+                        <div id="team2Ship2" class="teamShip spaceship2 shipRed not-selected"></div>
                     </div>
-                    <div class="teamShipContainer flex-center not-selected">
-                        <div id="team1Weapon1" class="teamWeapon weaponDouble weaponRed"><div></div><div></div></div>
-                        <div id="team1Ship1" class="teamShip spaceship2 shipRed"></div>
+                    <div class="teamShipContainer flex-center">
+                        <div id="team2Weapon3" class="teamWeapon weaponRed not-selected"><div class="weapon2"><div></div><div></div></div></div>
+                        <div id="team2Ship3" class="teamShip spaceship2 shipRed not-selected"></div>
                     </div>
                 </div>
             </div>
@@ -137,6 +138,7 @@
     <script src="js/entities.js"></script>
     <script src="js/physics.js"></script>
     <script src="js/controls.js"></script>
+    <script src="js/menus.js"></script>
     <script src="js/gradients.js"></script>
     <script src="js/app.js"></script>
 </body>

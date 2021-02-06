@@ -1,3 +1,73 @@
+class ControlsManager {
+    constructor(KBM) {
+        this.KBM = KBM;
+        this.looping = false;
+        this.loop = {};
+        this.gpButtons = {0:{0:false}};
+    }
+    kdmDelegate(e) {
+        this.KBM.keydownManager(e);
+    }
+    kumDelegate(e) {
+        this.KBM.keyupManager(e);
+    }
+    gpupManager(e) {
+        e=this.mapKey(e);
+        if (e) {
+            this.kumDelegate({key:e});
+        }
+    }
+    gpdownManager(e) {
+        e=this.mapKey(e);
+        if (e) {
+            this.kdmDelegate({key:e});
+        }
+    }
+    mapKey(e) {
+        for (let key in app.gameControlsGP) {
+            if (app.gameControlsGP[key]==e) {
+                return app.gameControls[key];
+            }
+        }
+        return false;
+    }
+    gpListen() {
+        this.loop = setInterval(() => {app.controlsManager.gpLoop();},16);
+        this.looping = true;
+    }
+    gpLoop() {
+        let gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+        let stop = true;
+        for (let i=0; i<gamepads.length; i++) {
+            if (gamepads[i] != null) {
+                stop = false;
+                for (let j=0; j<gamepads[i].buttons.length; j++) {
+                    if (!this.gpButtons[i][j] && gamepads[i].buttons[j].pressed){
+                        this.gpdownManager("GP"+i+"["+j+"]");
+                        this.gpButtons[i][j]=true;
+                    } else if (this.gpButtons[i][j] && !gamepads[i].buttons[j].pressed) {
+                        this.gpupManager("GP"+i+"["+j+"]");
+                        this.gpButtons[i][j]=false;
+                    }
+                }
+            }
+        }
+        if (stop) this.gpStop();
+    }
+    gpStop() {
+        clearInterval(this.loop);
+        this.looping = false;
+    }
+}
+
+let noControls = {
+    keydownManager : (e) => {},
+    keyupManager : (e) => {}
+};
+
+
+// Delete??:
+
 const KDMGame = (e) => {
     switch (e.key) {
         case "ArrowLeft":

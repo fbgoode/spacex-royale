@@ -32,7 +32,7 @@ body {
     0 0 1vmin rgba(255,255,255,0.7);
     padding-bottom:5vmin;
     margin: 2vmin 0;
-    cursor: pointer;
+    cursor: default;
     user-select: none;
 }
 
@@ -48,6 +48,7 @@ body {
     0 0 0.6vmin rgba(255,255,255,0.7);
     padding-bottom:2vmin;
     margin: 0.3vmin 0;
+    cursor: default;
     user-select: none;
 }
 
@@ -107,6 +108,20 @@ body {
 }
 
 .redBox {
+    border: 0.5vmin solid rgb(255, 127, 127);
+    box-shadow: 0 0 1.5vmin rgba(255, 127, 127, 0.7),
+    inset 0 0 1.5vmin rgba(255, 127, 127, 0.7);
+}
+
+.shipBlue.selected, .weaponBlue.selected {
+    opacity:1!important;
+    border: 0.5vmin solid rgb(127, 146, 255);
+    box-shadow: 0 0 1.5vmin rgba(127, 146, 255, 0.7),
+    inset 0 0 1.5vmin rgba(127, 146, 255, 0.7);
+}
+
+.shipRed.selected, .weaponRed.selected {
+    opacity:1!important;
     border: 0.5vmin solid rgb(255, 127, 127);
     box-shadow: 0 0 1.5vmin rgba(255, 127, 127, 0.7),
     inset 0 0 1.5vmin rgba(255, 127, 127, 0.7);
@@ -176,14 +191,14 @@ body {
     display:none!important;
 }
 
-.weaponBlue {
+.weaponBlue .weapon {
     background-color:white;
     box-shadow: 0 0 2.5vmin 0.5vmin rgba(127, 146, 255, 0.8),
     0 0 0.5vmin 0.2vmin rgb(127, 146, 255),
     inset 0 0 0.5vmin 0.3vmin rgb(127, 146, 255);
 }
 
-.weaponRed {
+.weaponRed .weapon {
     background-color:white;
     box-shadow: 0 0 2.5vmin 0.5vmin rgba(255, 131, 127, 0.8),
     0 0 0.5vmin 0.2vmin rgb(255, 131, 127),
@@ -194,18 +209,18 @@ body {
     transform: rotate(45deg);
 }
 
-.weaponSingle {
+.weapon1 {
     width:4%;
     height:60%;
     border-radius: 50em;
 }
 
-.weaponDouble.weaponBlue, .weaponDouble.weaponRed {
+.weaponBlue .weapon2, .weaponRed .weapon2 {
     background:none;
     box-shadow:none;
 }
 
-.weaponDouble.weaponBlue > div {
+.weaponBlue .weapon2 > div {
     width:2%;
     height:35%;
     margin:0 15%;
@@ -215,7 +230,7 @@ body {
     inset 0 0 0.2vmin 0.15vmin rgb(127, 146, 255);
 }
 
-.weaponDouble.weaponRed > div {
+.weaponRed .weapon2 > div {
     width:2%;
     height:35%;
     margin:0 15%;
@@ -225,7 +240,7 @@ body {
     inset 0 0 0.2vmin 0.15vmin rgb(255, 131, 127);
 }
 
-.weaponDouble {
+.weapon2 {
     width:100%;
     height:100%;
     display:flex;
@@ -233,7 +248,7 @@ body {
     align-items: center;
 }
 
-.weaponCannon {
+.weapon3 {
     width:8%;
     height:50%;
     border-radius: 50em;
@@ -298,6 +313,13 @@ body {
     width: 100%;
     height: 50%;
     margin-bottom: -30%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.teamWeapon .weapon {
+    transform:none;
 }
 
 .teamShip {
