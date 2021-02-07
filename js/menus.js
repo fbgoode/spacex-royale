@@ -95,9 +95,11 @@ class Menu extends Screen {
             }
         }
         this.selectionId = this.menuItemIds[this.row][this.col];
-        this.selection = this.menuItems[this.row][this.col];
-        this.selection.classList.add("selected");
-        this.onMove(this.selectionId);
+        if (this.selectionId) {
+            this.selection = this.menuItems[this.row][this.col];
+            this.selection.classList.add("selected");
+            this.onMove(this.selectionId);
+        }
     }
     mLeft() {
         if (this.col>0) {
@@ -154,8 +156,4 @@ class Menu extends Screen {
         app.doAction(this.selectionId);
         this.onSelect(this.selectionId);
     }
-}
-
-class Game extends Screen {
-
 }

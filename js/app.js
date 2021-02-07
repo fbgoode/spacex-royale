@@ -28,6 +28,10 @@ let app = {
                 app.controlsManager.KBM = app.menu;
                 break;
             case "PVPContinue":
+                app.menu.resetItems([[]]);
+                app.currgameData = app.gameData;
+                app.gameData = {teams: [[["",""],["",""],["",""]],[["",""],["",""],["",""]]]};
+                app.game = new Game(app.currgameData.teams);
                 let gameScreen = document.getElementById("gameScreen");
                 let gameCanvas = document.getElementById("gameCanvas");
                 let stars = document.getElementById("stars");
@@ -39,15 +43,30 @@ let app = {
         }
     },
     startPVP: () => {
-        console.log("Starting Game");
+        app.game.start();
+        app.controlsManager.KBM = app.game;
+    },
+    finishGame: () => {
+        let gameScreen = document.getElementById("gameScreen");
+        let gameCanvas = document.getElementById("gameCanvas");
+        let stars = document.getElementById("stars");
+        app.game.running = false;
+        app.menu = new Menu("t-mainMenu","gameScreen",app.menuItems.mainMenu);
+        gameScreen.classList.remove("moveDown");
+        gameCanvas.classList.remove("noTransform");
+        stars.classList.remove("bgDown");
+        setTimeout(()=>{app.controlsManager.KBM = app.menu;},3200);
     },
     showControls: () => {
         for (let key in app.gameControls) {
             document.getElementById(key).innerHTML = key.substr(2,key.length-2) + ": " + app.gameControls[key];
         }
     },
-    game: {
-        Teams: [[["",""],["",""],["",""]],[["",""],["",""],["",""]]]
+    gameData: {
+        teams: [[["",""],["",""],["",""]],[["",""],["",""],["",""]]]
+    },
+    currgameData: {
+        teams: [[["",""],["",""],["",""]],[["",""],["",""],["",""]]]
     },
     sel: "P1S1",
     PVPUpdate: (selectionId) => {
@@ -120,14 +139,14 @@ let app = {
                     app.doAction("toMainMenu");
                     break;
                 case "P1W1":
-                    app.game.Teams[0][0][0] = "";
+                    app.gameData.teams[0][0][0] = "";
                     removeShip("team1Ship1");
                     app.menu.resetItems(app.menuItems.PVPMenu);
                     msg.innerHTML = `- <span class="blueText">Player 1</span> select Ship 1 -`;
                     app.sel = "P1S1";
                     break;
                 case "P2S1":
-                    app.game.Teams[0][0][1] = "";
+                    app.gameData.teams[0][0][1] = "";
                     removeWeapon("team1Weapon1");
                     app.menu.resetItems(app.menuItems.PVPMenuW);
                     msg.innerHTML = `- <span class="blueText">Player 1</span> select Weapon 1 -`;
@@ -135,28 +154,28 @@ let app = {
                     changeColors("blue");
                     break;
                 case "P2W1":
-                    app.game.Teams[1][0][0] = "";
+                    app.gameData.teams[1][0][0] = "";
                     removeShip("team2Ship1");
                     app.menu.resetItems(app.menuItems.PVPMenu);
                     msg.innerHTML = `- <span class="redText">Player 2</span> select Ship 1 -`;
                     app.sel = "P2S1";
                     break;
                 case "P2S2":
-                    app.game.Teams[1][0][1] = "";
+                    app.gameData.teams[1][0][1] = "";
                     removeWeapon("team2Weapon1");
                     app.menu.resetItems(app.menuItems.PVPMenuW);
                     msg.innerHTML = `- <span class="redText">Player 2</span> select Weapon 1 -`;
                     app.sel = "P2W1";
                     break;
                 case "P2W2":
-                    app.game.Teams[1][1][0] = "";
+                    app.gameData.teams[1][1][0] = "";
                     removeShip("team2Ship2");
                     app.menu.resetItems(app.menuItems.PVPMenu);
                     msg.innerHTML = `- <span class="redText">Player 2</span> select Ship 2 -`;
                     app.sel = "P2S2";
                     break;
                 case "P1S2":
-                    app.game.Teams[1][1][1] = "";
+                    app.gameData.teams[1][1][1] = "";
                     removeWeapon("team2Weapon2");
                     app.menu.resetItems(app.menuItems.PVPMenuW);
                     msg.innerHTML = `- <span class="redText">Player 2</span> select Weapon 2 -`;
@@ -164,28 +183,28 @@ let app = {
                     changeColors("red");
                     break;
                 case "P1W2":
-                    app.game.Teams[0][1][0] = "";
+                    app.gameData.teams[0][1][0] = "";
                     removeShip("team1Ship2");
                     app.menu.resetItems(app.menuItems.PVPMenu);
                     msg.innerHTML = `- <span class="blueText">Player 1</span> select Ship 2 -`;
                     app.sel = "P1S2";
                     break;
                 case "P1S3":
-                    app.game.Teams[0][1][1] = "";
+                    app.gameData.teams[0][1][1] = "";
                     removeWeapon("team1Weapon2");
                     app.menu.resetItems(app.menuItems.PVPMenuW);
                     msg.innerHTML = `- <span class="blueText">Player 1</span> select Weapon 2 -`;
                     app.sel = "P1W2";
                     break;
                 case "P1W3":
-                    app.game.Teams[0][2][0] = "";
+                    app.gameData.teams[0][2][0] = "";
                     removeShip("team1Ship3");
                     app.menu.resetItems(app.menuItems.PVPMenu);
                     msg.innerHTML = `- <span class="blueText">Player 1</span> select Ship 3 -`;
                     app.sel = "P1S3";
                     break;
                 case "P2S3":
-                    app.game.Teams[0][2][1] = "";
+                    app.gameData.teams[0][2][1] = "";
                     removeWeapon("team1Weapon3");
                     app.menu.resetItems(app.menuItems.PVPMenuW);
                     msg.innerHTML = `- <span class="blueText">Player 1</span> select Weapon 3 -`;
@@ -193,14 +212,14 @@ let app = {
                     changeColors("blue");
                     break;
                 case "P2W3":
-                    app.game.Teams[1][2][0] = "";
+                    app.gameData.teams[1][2][0] = "";
                     removeShip("team2Ship3");
                     app.menu.resetItems(app.menuItems.PVPMenu);
                     msg.innerHTML = `- <span class="redText">Player 2</span> select Ship 3 -`;
                     app.sel = "P2S3";
                     break;
                 case "ready":
-                    app.game.Teams[1][2][1] = "";
+                    app.gameData.teams[1][2][1] = "";
                     removeWeapon("team2Weapon3");
                     app.menu.resetItems(app.menuItems.PVPMenuW);
                     document.getElementById("PVPContinue").classList.add("opacity-03");
@@ -211,14 +230,14 @@ let app = {
         } else {
             switch (app.sel) {
                 case "P1S1":
-                    app.game.Teams[0][0][0] = selectionId;
+                    app.gameData.teams[0][0][0] = selectionId;
                     selectShip("team1Ship1");
                     app.menu.resetItems(app.menuItems.PVPMenuW);
                     msg.innerHTML = `- <span class="blueText">Player 1</span> select Weapon 1 -`;
                     app.sel = "P1W1";
                     break;
                 case "P1W1":
-                    app.game.Teams[0][0][1] = selectionId;
+                    app.gameData.teams[0][0][1] = selectionId;
                     selectWeapon("team1Weapon1");
                     app.menu.resetItems(app.menuItems.PVPMenu);
                     msg.innerHTML = `- <span class="redText">Player 2</span> select Ship 1 -`;
@@ -226,28 +245,28 @@ let app = {
                     changeColors("red");
                     break;
                 case "P2S1":
-                    app.game.Teams[1][0][0] = selectionId;
+                    app.gameData.teams[1][0][0] = selectionId;
                     selectShip("team2Ship1");
                     app.menu.resetItems(app.menuItems.PVPMenuW);
                     msg.innerHTML = `- <span class="redText">Player 2</span> select Weapon 1 -`;
                     app.sel = "P2W1";
                     break;
                 case "P2W1":
-                    app.game.Teams[1][0][1] = selectionId;
+                    app.gameData.teams[1][0][1] = selectionId;
                     selectWeapon("team2Weapon1");
                     app.menu.resetItems(app.menuItems.PVPMenu);
                     msg.innerHTML = `- <span class="redText">Player 2</span> select Ship 2 -`;
                     app.sel = "P2S2";
                     break;
                 case "P2S2":
-                    app.game.Teams[1][1][0] = selectionId;
+                    app.gameData.teams[1][1][0] = selectionId;
                     selectShip("team2Ship2");
                     app.menu.resetItems(app.menuItems.PVPMenuW);
                     msg.innerHTML = `- <span class="redText">Player 2</span> select Weapon 2 -`;
                     app.sel = "P2W2";
                     break;
                 case "P2W2":
-                    app.game.Teams[1][1][1] = selectionId;
+                    app.gameData.teams[1][1][1] = selectionId;
                     selectWeapon("team2Weapon2");
                     app.menu.resetItems(app.menuItems.PVPMenu);
                     msg.innerHTML = `- <span class="blueText">Player 1</span> select Ship 2 -`;
@@ -255,28 +274,28 @@ let app = {
                     changeColors("blue");
                     break;
                 case "P1S2":
-                    app.game.Teams[0][1][0] = selectionId;
+                    app.gameData.teams[0][1][0] = selectionId;
                     selectShip("team1Ship2");
                     app.menu.resetItems(app.menuItems.PVPMenuW);
                     msg.innerHTML = `- <span class="blueText">Player 1</span> select Weapon 2 -`;
                     app.sel = "P1W2";
                     break;
                 case "P1W2":
-                    app.game.Teams[0][1][1] = selectionId;
+                    app.gameData.teams[0][1][1] = selectionId;
                     selectWeapon("team1Weapon2");
                     app.menu.resetItems(app.menuItems.PVPMenu);
                     msg.innerHTML = `- <span class="blueText">Player 1</span> select Ship 3 -`;
                     app.sel = "P1S3";
                     break;
                 case "P1S3":
-                    app.game.Teams[0][2][0] = selectionId;
+                    app.gameData.teams[0][2][0] = selectionId;
                     selectShip("team1Ship3");
                     app.menu.resetItems(app.menuItems.PVPMenuW);
                     msg.innerHTML = `- <span class="blueText">Player 1</span> select Weapon 3 -`;
                     app.sel = "P1W3";
                     break;
                 case "P1W3":
-                    app.game.Teams[0][2][1] = selectionId;
+                    app.gameData.teams[0][2][1] = selectionId;
                     selectWeapon("team1Weapon3");
                     app.menu.resetItems(app.menuItems.PVPMenu);
                     msg.innerHTML = `- <span class="redText">Player 2</span> select Ship 3 -`;
@@ -284,14 +303,14 @@ let app = {
                     changeColors("red");
                     break;
                 case "P2S3":
-                    app.game.Teams[1][2][0] = selectionId;
+                    app.gameData.teams[1][2][0] = selectionId;
                     selectShip("team2Ship3");
                     app.menu.resetItems(app.menuItems.PVPMenuW);
                     msg.innerHTML = `- <span class="redText">Player 2</span> select Weapon 3 -`;
                     app.sel = "P2W3";
                     break;
                 case "P2W3":
-                    app.game.Teams[1][2][1] = selectionId;
+                    app.gameData.teams[1][2][1] = selectionId;
                     selectWeapon("team2Weapon3");
                     spaceshipContainer.classList.add("opacity-03");
                     app.menu.resetItems([["PVPBack","PVPContinue"]],0,1);
@@ -391,18 +410,21 @@ let app = {
         },
         spaceship1: {
             name: "Tincan",
+            img: {blue:"/img/ship1-b.svg",red:"/img/ship1-r.svg"},
             HP: 500,
             boost: 1800,
             gas: 800
         },
         spaceship2: {
             name: "Trooper",
+            img: {blue:"/img/ship2-b.svg",red:"/img/ship2-r.svg"},
             HP: 350,
             boost: 2400,
             gas: 1200
         },
         spaceship3: {
             name: "Heavy",
+            img: {blue:"/img/ship3-b.svg",red:"/img/ship3-r.svg"},
             HP: 650,
             boost: 1200,
             gas: 400
@@ -438,6 +460,4 @@ let app = {
     }
 }
 
-let canvas = document.getElementById("gameCanvas");
-let ctx = canvas.getContext("2d");
 app.init();

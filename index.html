@@ -18,7 +18,7 @@
     <div id="gameScreen" class="ratio-16-9 flex-center">
         <!-- Templates are used here -->
     </div>
-    <canvas id="gameCanvas" class="moveUp display-none" width="1920" height="1080"></canvas>
+    <canvas id="gameCanvas" class="moveUp display-none" width="1920" height="1080">
     <!-- Main Menu template -->
     <script id="t-mainMenu" type="text/x-template">
         <div id="mainMenu" class="flex-center">
@@ -133,14 +133,19 @@
     </script>
     <!-- Game Canvas template -->
     <script id="t-gameCanvas" type="text/x-template">
-        <canvas id="gameCanvas" width="1920" height="1080"></canvas>
+        <canvas id="gameCanvas" width="1920" height="1080">
     </script>
+    <!-- Game audio -->
+    <audio id="aClassic" src="audio/classic.wav" preload="auto"></audio>
+    <audio id="aDouble" src="audio/double.wav" preload="auto"></audio>
+    <audio id="aCannon" src="audio/cannon.wav" preload="auto"></audio>
     <!-- Game logic files -->
     <script src="js/entities.js"></script>
     <script src="js/physics.js"></script>
     <script src="js/controls.js"></script>
     <script src="js/menus.js"></script>
     <script src="js/gradients.js"></script>
+    <script src="js/game.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

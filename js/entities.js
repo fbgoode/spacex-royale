@@ -34,6 +34,25 @@ class Entity {
     }
 }
 
+class LifeBar extends Entity {
+    constructor(color,width,height,x,y,a = 0, moves = false, vx0 = 0, vy0 = 0) {
+        super(x, y, a, moves, vx0, vy0);
+        this.width = width;
+        this.height = height;
+        this.color = color;
+    }
+    draw() {
+        ctx.save();
+        ctx.fillStyle = this.color;
+        ctx.translate(this.x, this.y);
+        if (this.a) {
+            ctx.rotate(this.a);
+        }
+        ctx.fillRect(0, 0, this.width, this.height);
+        ctx.restore();
+    }
+}
+
 class Rectangle extends Entity {
     constructor(color,width,height,x,y,a = 0, moves = false, vx0 = 0, vy0 = 0) {
         super(x, y, a, moves, vx0, vy0);
@@ -87,12 +106,17 @@ class Sprite extends Entity {
         this.height = height;
         this.img = new Image();
         this.img.src = src;
+        this.opacity = 1;
     }
     draw() {
         ctx.save();
         ctx.translate(this.x, this.y);
         if (this.a) {
             ctx.rotate(this.a);
+        }
+        if (this.opacity < 1) {
+            this.opacity += 0.01;
+            ctx.globalAlpha = this.opacity;
         }
         ctx.translate(-this.width * 0.5, -this.height * 0.5);
         ctx.drawImage(this.img, 0, 0, this.width, this.height);
@@ -101,7 +125,7 @@ class Sprite extends Entity {
 }
 
 class Spaceship extends Sprite {
-    constructor(stats,weapon,src,width,height,x,y,a = 0, moves = false, vx0 = 0, vy0 = 0) {
+    constructor(stats,weapon,color,src,width,height,x,y,a = 0, moves = false, vx0 = 0, vy0 = 0) {
         super(src,width,height,x,y,a,moves,vx0,vy0);
         this.af = false;
         this.ab = false;
@@ -110,6 +134,7 @@ class Spaceship extends Sprite {
         this.HP = stats.HP;
         this.stats = stats;
         this.weapon = weapon;
+        this.color = color;
         this.wrefresh = 0;
         this.r = 25;
         this.shooting = false;
@@ -118,20 +143,29 @@ class Spaceship extends Sprite {
         if (this.wrefresh<=0) {
             let a = this.a-Math.PI/2
             if (this.weapon.type=="single") {
+                if (this.weapon.dmg<25) {
+                    aClassic.currentTime = 0;
+                    aClassic.play();
+                } else {
+                    aCannon.currentTime = 0;
+                    aCannon.play();
+                }
                 let mx = Math.cos(a);
                 let my = Math.sin(a);
-                let bullet = new Bullet(this.x+mx*30,this.y+my*30,a,this.weapon.v,this.weapon.color,this.weapon.dmg,this.vx,this.vy);
+                let bullet = new Bullet(this.x+mx*30,this.y+my*30,a,this.weapon.v,this.color,this.weapon.dmg,this.vx,this.vy);
                 physics.bullets.push(bullet);
                 this.vx -= this.weapon.dmg * this.weapon.v/500 * mx;
                 this.vy -= this.weapon.dmg * this.weapon.v/500 * my;
 
             } else {
+                aDouble.currentTime = 0;
+                aDouble.play();
                 let mx1 = Math.cos(a+0.35);
                 let my1 = Math.sin(a+0.35);
                 let mx2 = Math.cos(a-0.35);
                 let my2 = Math.sin(a-0.35);
-                let bullet1 = new Bullet(this.x+mx1*30,this.y+my1*30,a,this.weapon.v,this.weapon.color,this.weapon.dmg,this.vx,this.vy);
-                let bullet2 = new Bullet(this.x+mx2*30,this.y+my2*30,a,this.weapon.v,this.weapon.color,this.weapon.dmg,this.vx,this.vy);
+                let bullet1 = new Bullet(this.x+mx1*30,this.y+my1*30,a,this.weapon.v,this.color,this.weapon.dmg,this.vx,this.vy);
+                let bullet2 = new Bullet(this.x+mx2*30,this.y+my2*30,a,this.weapon.v,this.color,this.weapon.dmg,this.vx,this.vy);
                 physics.bullets.push(bullet1,bullet2);
                 this.vx -= this.weapon.dmg * this.weapon.v/500 * Math.cos(a) * 2;
                 this.vy -= this.weapon.dmg * this.weapon.v/500 * Math.sin(a) * 2;
