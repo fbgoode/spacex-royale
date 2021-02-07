@@ -10,8 +10,11 @@ ctx.lineCap = "round";
 ctx.font = "bold 26px Arial";
 
 let aClassic = document.getElementById("aClassic");
+aClassic.volume = 0.08;
 let aDouble = document.getElementById("aDouble");
+aDouble.volume = 0.08;
 let aCannon = document.getElementById("aCannon");
+aCannon.volume = 0.08;
 
 class Game {
     constructor (teams) {
@@ -30,8 +33,6 @@ class Game {
         this.life1 = new LifeBar("rgba(50, 84, 168, 0.5)",890,10,70,30);
         this.life2 = new LifeBar("rgba(168, 64, 50, 0.5)",890,10,1850,1050,180);
         let block = new Block("purple",700,300,1920/2,1080/2);
-        block.draw();
-        this.renderHUD();
         let edges = [
             new Wall(1920,1920/2,0,0,1),
             new Wall(1920,1920/2,1080,0,-1),
@@ -46,6 +47,8 @@ class Game {
         this.gamefinished = false;
         this.lastFrame = null;
         this.finalOpacity=-1;
+        block.draw();
+        this.renderHUD();
     }
     start() {
         this.gameLoop();

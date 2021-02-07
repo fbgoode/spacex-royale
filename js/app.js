@@ -1,5 +1,6 @@
 let app = {
     init: () => {
+        //aIntro.play();
         app.controlsManager = new ControlsManager(noControls);
         document.addEventListener('keydown', (e) => {app.controlsManager.kdmDelegate(e)});
         document.addEventListener('keyup', (e) => {app.controlsManager.kumDelegate(e)});
@@ -26,6 +27,7 @@ let app = {
             case "toMainMenu":
                 app.menu = new Menu("t-mainMenu","gameScreen",app.menuItems.mainMenu);
                 app.controlsManager.KBM = app.menu;
+                aMenu.play();
                 break;
             case "PVPContinue":
                 app.menu.resetItems([[]]);
@@ -38,9 +40,14 @@ let app = {
                 gameScreen.classList.add("moveDown");
                 gameCanvas.classList.add("noTransform");
                 stars.classList.add("bgDown");
+                aMenu.pause();
+                aSwoosh.play();
                 setTimeout(app.startPVP,4000);
                 break;
         }
+    },
+    playIntro: () => {
+
     },
     startPVP: () => {
         app.game.start();
@@ -55,7 +62,11 @@ let app = {
         gameScreen.classList.remove("moveDown");
         gameCanvas.classList.remove("noTransform");
         stars.classList.remove("bgDown");
+        aSwoosh.play();
         setTimeout(()=>{app.controlsManager.KBM = app.menu;},3200);
+        setTimeout(()=>{aMenu.currentTime = 0;
+            aMenu.play();},4450);
+        
     },
     showControls: () => {
         for (let key in app.gameControls) {
@@ -459,5 +470,12 @@ let app = {
         }
     }
 }
+
+let aIntro = document.getElementById("aIntro");
+let aMenu = document.getElementById("aMenu");
+let aSwoosh = document.getElementById("aSwoosh");
+aIntro.volume = 0.5;
+aMenu.volume = 0.2;
+aMenu.loop = true;
 
 app.init();
