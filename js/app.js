@@ -438,21 +438,21 @@ let app = {
         },
         spaceship1: {
             name: "Tincan",
-            img: {blue:"/img/ship1-b.svg",red:"/img/ship1-r.svg"},
+            img: {blue:"../img/ship1-b.svg",red:"../img/ship1-r.svg"},
             HP: 500,
             boost: 1800,
             gas: 800
         },
         spaceship2: {
             name: "Trooper",
-            img: {blue:"/img/ship2-b.svg",red:"/img/ship2-r.svg"},
+            img: {blue:"../img/ship2-b.svg",red:"../img/ship2-r.svg"},
             HP: 350,
             boost: 2400,
             gas: 1200
         },
         spaceship3: {
             name: "Heavy",
-            img: {blue:"/img/ship3-b.svg",red:"/img/ship3-r.svg"},
+            img: {blue:"../img/ship3-b.svg",red:"../img/ship3-r.svg"},
             HP: 650,
             boost: 1200,
             gas: 400
