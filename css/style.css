@@ -148,7 +148,7 @@ body {
 }
 
 .twinkling{
-	background:transparent url('/img/twinkling.png') repeat top center;
+	background:transparent url('../img/twinkling.png') repeat top center;
 	animation: move-twink-back 600s linear infinite;
 	z-index: 1;
 }
@@ -328,42 +328,42 @@ body {
 }
 
 .spaceship1.shipBlue {
-    background-image: url(/img/ship1-b.svg);
+    background-image: url(../img/ship1-b.svg);
     background-size: 60%;
     background-repeat: no-repeat;
     background-position: center;
 }
 
 .spaceship2.shipBlue {
-    background-image: url(/img/ship2-b.svg);
+    background-image: url(../img/ship2-b.svg);
     background-size: 60%;
     background-repeat: no-repeat;
     background-position: center;
 }
 
 .spaceship3.shipBlue {
-    background-image: url(/img/ship3-b.svg);
+    background-image: url(../img/ship3-b.svg);
     background-size: 60%;
     background-repeat: no-repeat;
     background-position: center;
 }
 
 .spaceship1.shipRed {
-    background-image: url(/img/ship1-r.svg);
+    background-image: url(../img/ship1-r.svg);
     background-size: 60%;
     background-repeat: no-repeat;
     background-position: center;
 }
 
 .spaceship2.shipRed {
-    background-image: url(/img/ship2-r.svg);
+    background-image: url(../img/ship2-r.svg);
     background-size: 60%;
     background-repeat: no-repeat;
     background-position: center;
 }
 
 .spaceship3.shipRed {
-    background-image: url(/img/ship3-r.svg);
+    background-image: url(../img/ship3-r.svg);
     background-size: 60%;
     background-repeat: no-repeat;
     background-position: center;
@@ -449,7 +449,7 @@ body {
 }
 
 #stars {
-    background: url('/img/stars.png') repeat;
+    background: url('../img/stars.png') repeat;
     z-index: 0;
     transition:background-position 4s ease;
 }

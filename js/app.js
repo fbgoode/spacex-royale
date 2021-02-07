@@ -5,11 +5,23 @@ let app = {
         document.addEventListener('keydown', (e) => {app.controlsManager.kdmDelegate(e)});
         document.addEventListener('keyup', (e) => {app.controlsManager.kumDelegate(e)});
         window.addEventListener('gamepadconnected', () => {if(!app.controlsManager.looping) app.controlsManager.gpListen();});
-        app.doAction("toMainMenu");
+        app.soundMenu();
         setTimeout(()=>{canvas.classList.remove("display-none")},1000);
     },
     doAction: (id) => {
         switch (id) {
+            case "soundWith":
+                app.doAction("toMainMenu");
+            break;
+            case "soundWithout":
+                aIntro.volume = 0;
+                aMenu.volume = 0;
+                aSwoosh.volume = 0;
+                aClassic.volume = 0;
+                aDouble.volume = 0;
+                aCannon.volume = 0;
+                app.doAction("toMainMenu");
+                break;
             case "mainPVP":
                 app.menu = new Menu("t-PVPMenu","gameScreen",app.menuItems.PVPMenu,
                 (selectionId)=>{app.PVPStatsUpdate(selectionId)},
@@ -45,6 +57,10 @@ let app = {
                 setTimeout(app.startPVP,4000);
                 break;
         }
+    },
+    soundMenu: () => {
+        app.menu = new Menu("t-soundMenu","gameScreen",app.menuItems.soundMenu);
+        app.controlsManager.KBM = app.menu;
     },
     playIntro: () => {
 
@@ -372,6 +388,7 @@ let app = {
         }
     },
     menuItems: {
+        soundMenu: [["soundWith"],["soundWithout"]],
         mainMenu: [["mainPVP"],["mainControls"]],
         controlsMenu: [["controlsBack"]],
         PVPMenu: [["spaceship1","spaceship2","spaceship3"],["PVPBack"]],
