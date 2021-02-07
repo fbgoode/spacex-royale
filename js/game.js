@@ -32,7 +32,7 @@ class Game {
         this.player2i = 0;
         this.life1 = new LifeBar("rgba(50, 84, 168, 0.5)",890,10,70,30);
         this.life2 = new LifeBar("rgba(168, 64, 50, 0.5)",890,10,1850,1050,180);
-        let block = new Block("purple",700,300,1920/2,1080/2);
+        let block = new Block("rgba(255, 255, 255, 0.3)",700,300,1920/2,1080/2);
         let edges = [
             new Wall(1920,1920/2,0,0,1),
             new Wall(1920,1920/2,1080,0,-1),
