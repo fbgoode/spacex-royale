@@ -6,13 +6,18 @@ let app = {
         document.addEventListener('keyup', (e) => {app.controlsManager.kumDelegate(e)});
         window.addEventListener('gamepadconnected', () => {if(!app.controlsManager.looping) app.controlsManager.gpListen();});
         app.soundMenu();
-        setTimeout(()=>{canvas.classList.remove("display-none")},1000);
+        setTimeout(()=>{canvas.classList.add("display-block")},1000);
     },
     doAction: (id) => {
         switch (id) {
             case "soundWith":
-                app.doAction("toMainMenu");
+                app.playIntro();
             break;
+            case "skipIntro":
+                clearTimeout(timeout);
+                aIntro.pause();
+                app.doAction("toMainMenu");
+                break;
             case "soundWithout":
                 aIntro.volume = 0;
                 aMenu.volume = 0;
@@ -20,7 +25,7 @@ let app = {
                 aClassic.volume = 0;
                 aDouble.volume = 0;
                 aCannon.volume = 0;
-                app.doAction("toMainMenu");
+                app.playIntro();
                 break;
             case "mainPVP":
                 app.menu = new Menu("t-PVPMenu","gameScreen",app.menuItems.PVPMenu,
@@ -43,6 +48,7 @@ let app = {
                 break;
             case "PVPContinue":
                 app.menu.resetItems([[]]);
+                app.sel = "P1S1";
                 app.currgameData = app.gameData;
                 app.gameData = {teams: [[["",""],["",""],["",""]],[["",""],["",""],["",""]]]};
                 app.game = new Game(app.currgameData.teams);
@@ -63,7 +69,40 @@ let app = {
         app.controlsManager.KBM = app.menu;
     },
     playIntro: () => {
-
+        aIntro.play();
+        app.menu = new Menu("t-title","gameScreen",[[]]);
+        app.controlsManager.KBM = app.menu;
+        setTimeout(()=>{document.getElementById("title1").classList.add("opacity-1");},1000);
+        setTimeout(()=>{document.getElementById("title1").classList.remove("opacity-1");},4000);
+        setTimeout(()=>{
+            document.getElementById("comet").classList.add("animate");
+            document.getElementById("title1").classList.add("display-none");
+            document.getElementById("title2").classList.remove("display-none");
+        },5200);
+        setTimeout(()=>{document.getElementById("title2").classList.add("opacity-1");},6000);
+        setTimeout(()=>{document.getElementById("title2").classList.remove("opacity-1");},9000);
+        setTimeout(()=>{
+            app.menu = new Menu("t-intro","gameScreen",[["skipIntro"]]);
+            app.controlsManager.KBM = app.menu;
+            setTimeout(()=>{
+                document.getElementById("intro").classList.add("scroll");
+            },500);
+            timeout = setTimeout(()=>{
+                app.menu.resetItems([[]]);
+                interval = setInterval(()=>{
+                    if (aIntro.volume>0) {
+                        let newvol = aIntro.volume - 0.007;
+                        if (newvol < 0) newvol = 0;
+                        aIntro.volume = newvol;
+                    } else {
+                        clearInterval(interval);
+                        aIntro.pause();
+                        app.doAction("toMainMenu");
+                    }
+                },20);
+            },83000);
+        },11000);
+        
     },
     startPVP: () => {
         app.game.start();
@@ -488,6 +527,8 @@ let app = {
     }
 }
 
+let interval;
+let timeout;
 let aIntro = document.getElementById("aIntro");
 let aMenu = document.getElementById("aMenu");
 let aSwoosh = document.getElementById("aSwoosh");

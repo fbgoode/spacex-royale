@@ -19,7 +19,7 @@
 <tr>
 <td>
   
-**SpaceX Royale** is a two player game built with HTML5, CSS3 and JS ES6. This game was developed with the purpose of learning these basic web development tools in their raw form, hence the use of zero external libraries.
+**SpaceX Royale** is a two player game built with HTML5, CSS3 and JS ES6. This game was developed with the purpose of learning these basic web development tools in their raw form with Object Oriented Programming & manual JS HTML templating, hence the use of zero external libraries.
 
 The game may be played in any modern browser. It can be played on any device in landscape orientation, as long as a keyboard is available. Limited support for GamePad is provided.
 

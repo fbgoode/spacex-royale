@@ -18,17 +18,46 @@
     <div id="gameScreen" class="ratio-16-9 flex-center">
         <!-- Templates are used here -->
     </div>
-    <canvas id="gameCanvas" class="moveUp display-none" width="1920" height="1080">
-    <!-- Main Menu template -->
+    <canvas id="gameCanvas" class="moveUp" width="1920" height="1080">
+    <!-- Sound Menu template -->
     <script id="t-soundMenu" type="text/x-template">
         <div id="soundMenu" class="flex-center">
             <div id="soundWith" class="menuItem selected">Start with audio</div>
             <div id="soundWithout" class="menuItem">Start without audio</div>
         </div>
     </script>
+    <!-- Title -->
+    <script id="t-title" type="text/x-template">
+        <div id="title1" class="flex-center titleCard">
+            <img id="FBLogo" src="img/FB.svg" alt="FB Logo">
+            <div class="menuText">an FB Production</div>
+        </div>
+        <div id="title2" class="flex-center titleCard display-none">
+            <img id="GEEKSLogo" src="img/GEEKS.svg" alt="GeeksHub Logo">
+            <div class="menuText">under GeeksHubs' FSD Bootcamp</div>
+        </div>
+    </script>
+    <!-- Intro template -->
+    <script id="t-intro" type="text/x-template">
+        <div id="intro" class="flex-center">
+            <div class="menuText theYear">The year is 2035.</div>
+            <div class="menuText mb-8">With an exponential growth in wealth, in the last 15 years <b>Elon Musk</b> has gone from being the richest man in Earth to accumulating more wealth than 50 years worth of the planet's GDP.</div>
+            <div class="menuText mb-8">Musk, who already is the president of Mars, decided to buy planet Earth in order to take down goverment's regulations in benefit of his business operations.</div>
+            <div class="menuText mb-8">In his infamous campaign to buy planet Earth he persuaded voters of the "Earth Sale Referendum" to vote <b>Yes</b> by promising to take care of climate change once and for all, and of course a few thousand dollars each.</div>
+            <div class="menuText mb-8">With an overwhelming majority of 92%, it was democratically decided that planet Earth would be sold to Musk, and that he would have the last word in the organization of Earth's resources and inhabitants.</div>
+            <div class="menuText theYear mb-8">What nobody expected, is that Musk's plan to end climate change was based on <span class="redText"><b>reducing the planet's population by half</b></span>, and <em>not exactly by the traditional means</em>...</div>
+            <div class="menuText mb-8">The whole world population was divided into <span class="blueText"><b>Team Blue</b></span> and <span class="redText"><b>Team Red</b></span>, and everyone would have to take part in a one of the millions upon millions of organized battles aboard SpaceX's brand new <b>Battle StarShips</b>.</div>
+            <div class="menuText mb-8">Whoever survives their battle gets to live in Musk's New Earth.</div>
+            <div class="menuText mb-8 theYear">Are you ready for your battle?</div>
+        </div>
+        <div id="introMenu">
+            <div id="skipIntro" class="menuItem selected">Skip intro</div>
+        </div>
+    </script>
     <!-- Main Menu template -->
     <script id="t-mainMenu" type="text/x-template">
         <div id="mainMenu" class="flex-center">
+            <div id="title" class="menuItem ">SpaceX Royale</div>
             <div id="mainPVP" class="menuItem selected">Player vs. Player</div>
             <div id="mainControls" class="menuItem">Controls</div>
         </div>
