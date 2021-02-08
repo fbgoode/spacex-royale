@@ -47,6 +47,8 @@ class Game {
         this.gamefinished = false;
         this.lastFrame = null;
         this.finalOpacity=-1;
+        ctx.font = "bold 26px Arial";
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         block.draw();
         this.renderHUD();
     }
