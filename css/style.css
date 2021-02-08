@@ -13,8 +13,8 @@ body {
 
 .ratio-16-9 {
     display: block;
-    width: 100%;
-    height: calc(100vw*9/16);
+    width: 100%!important;
+    height: calc(100vw*9/16)!important;
 }
 
 .flex-center {
@@ -523,8 +523,8 @@ body {
 @media (min-aspect-ratio:16/9) {
     .ratio-16-9 {
         padding-top:0;
-        height: 100%;
-        width: calc(100vh*16/9);
+        height: 100%!important;
+        width: calc(100vh*16/9)!important;
     }
 }
 
