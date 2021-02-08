@@ -48,7 +48,6 @@ let app = {
                 break;
             case "PVPContinue":
                 app.menu.resetItems([[]]);
-                app.sel = "P1S1";
                 app.currgameData = app.gameData;
                 app.gameData = {teams: [[["",""],["",""],["",""]],[["",""],["",""],["",""]]]};
                 app.game = new Game(app.currgameData.teams);
@@ -107,6 +106,7 @@ let app = {
     startPVP: () => {
         app.game.start();
         app.controlsManager.KBM = app.game;
+        app.sel = "P1S1";
     },
     finishGame: () => {
         let gameScreen = document.getElementById("gameScreen");
