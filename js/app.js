@@ -8,6 +8,112 @@ let app = {
         app.soundMenu();
         setTimeout(()=>{canvas.classList.add("display-block")},1000);
     },
+    gameData: {
+        teams: [[["",""],["",""],["",""]],[["",""],["",""],["",""]]]
+    },
+    currgameData: {
+        teams: [[["",""],["",""],["",""]],[["",""],["",""],["",""]]]
+    },
+    sel: "P1S1",
+    menuItems: {
+        soundMenu: [["soundWith"],["soundWithout"]],
+        mainMenu: [["mainPVP"],["mainControls"]],
+        controlsMenu: [["controlsBack"]],
+        PVPMenu: [["spaceship1","spaceship2","spaceship3"],["PVPBack"]],
+        PVPMenuW: [["weapon1","weapon2","weapon3"],["PVPBack"]]
+    },
+    gameControls: {
+        P1Boost:"ArrowUp",
+        P1TurnL:"ArrowLeft",
+        P1TurnR:"ArrowRight",
+        P1StrafeL:"M",
+        P1StrafeR:",",
+        P1Back:"ArrowDown",
+        P1Shoot:".",
+        P1Special:"N",
+        P2Boost:"R",
+        P2TurnL:"D",
+        P2TurnR:"G",
+        P2StrafeL:"1",
+        P2StrafeR:"2",
+        P2Back:"F",
+        P2Shoot:"3",
+        P2Special:"º"
+    },
+    gameControlsGP: {
+        P1Boost:"",
+        P1TurnL:"",
+        P1TurnR:"",
+        P1StrafeL:"",
+        P1StrafeR:"",
+        P1Back:"",
+        P1Shoot:"",
+        P1Special:"",
+        P2Boost:"GP0[12]",
+        P2TurnL:"GP0[15]",
+        P2TurnR:"GP0[13]",
+        P2StrafeL:"GP0[6]",
+        P2StrafeR:"GP0[7]",
+        P2Back:"GP0[14]",
+        P2Shoot:"GP0[2]",
+        P2Special:"GP0[3]"
+    },
+    ships: {
+        shipmax: {
+            HP: 650,
+            boost: 2400,
+            gas: 1200
+        },
+        spaceship1: {
+            name: "Tincan",
+            img: {blue:"img/ship1-b.svg",red:"img/ship1-r.svg"},
+            HP: 500,
+            boost: 1800,
+            gas: 800
+        },
+        spaceship2: {
+            name: "Trooper",
+            img: {blue:"img/ship2-b.svg",red:"img/ship2-r.svg"},
+            HP: 350,
+            boost: 2400,
+            gas: 1200
+        },
+        spaceship3: {
+            name: "Heavy",
+            img: {blue:"img/ship3-b.svg",red:"img/ship3-r.svg"},
+            HP: 650,
+            boost: 1200,
+            gas: 400
+        }
+    },
+    weapons: {
+        weaponmax: {
+            v: 3000,
+            freq: 0.15,
+            dmg: 40
+        },
+        weapon1: {
+            name: "Classic",
+            v: 1200,
+            type: 'single',
+            freq: 0.2,
+            dmg: 15
+        },
+        weapon2: {
+            name: "Double",
+            v: 800,
+            type: 'double',
+            freq: 0.15,
+            dmg: 8
+        },
+        weapon3: {
+            name: "Cannon",
+            v: 3000,
+            type: 'single',
+            freq: 1.5,
+            dmg: 40
+        }
+    },
     doAction: (id) => {
         switch (id) {
             case "soundWith":
@@ -128,13 +234,45 @@ let app = {
             document.getElementById(key).innerHTML = key.substr(2,key.length-2) + ": " + app.gameControls[key];
         }
     },
-    gameData: {
-        teams: [[["",""],["",""],["",""]],[["",""],["",""],["",""]]]
+    PVPStatsUpdate: (selectionId) => {
+        let spaceshipName = document.getElementById("spaceshipName");
+        let spaceshipStatHP = document.getElementById("spaceshipStatHP");
+        let spaceshipStatSPD = document.getElementById("spaceshipStatSPD");
+        let spaceshipStatGAS = document.getElementById("spaceshipStatGAS");
+        let weaponName = document.getElementById("weaponName");
+        let weaponStatDMG = document.getElementById("weaponStatDMG");
+        let weaponStatSPD = document.getElementById("weaponStatSPD");
+        let weaponStatFRQ = document.getElementById("weaponStatFRQ");
+        let type = selectionId.substr(0,selectionId.length-1);
+        if(type=="spaceship") {
+            spaceshipName.innerHTML=app.ships[selectionId].name;
+            spaceshipStatHP.style.width = `${(~~(app.ships[selectionId].HP/app.ships.shipmax.HP*100))}%`;
+            spaceshipStatSPD.style.width = `${(~~(app.ships[selectionId].boost/app.ships.shipmax.boost*100))}%`;
+            spaceshipStatGAS.style.width = `${(~~(app.ships[selectionId].gas/app.ships.shipmax.gas*100))}%`;
+            weaponName.innerHTML="Weapon";
+            weaponStatDMG.style.width = "0";
+            weaponStatSPD.style.width = "0";
+            weaponStatFRQ.style.width = "0";
+        } else if(type=="weapon") {
+            spaceshipName.innerHTML="Ship";
+            spaceshipStatHP.style.width = "0";
+            spaceshipStatSPD.style.width = "0";
+            spaceshipStatGAS.style.width = "0";
+            weaponName.innerHTML=app.weapons[selectionId].name;
+            weaponStatDMG.style.width = `${(~~(app.weapons[selectionId].dmg/app.weapons.weaponmax.dmg*100))}%`;
+            weaponStatSPD.style.width = `${(~~(app.weapons[selectionId].v/app.weapons.weaponmax.v*100))}%`;
+            weaponStatFRQ.style.width = `${(~~(app.weapons.weaponmax.freq/app.weapons[selectionId].freq*100))}%`;
+        } else {
+            spaceshipName.innerHTML="Ship";
+            spaceshipStatHP.style.width = "0";
+            spaceshipStatSPD.style.width = "0";
+            spaceshipStatGAS.style.width = "0";
+            weaponName.innerHTML="Weapon";
+            weaponStatDMG.style.width = "0";
+            weaponStatSPD.style.width = "0";
+            weaponStatFRQ.style.width = "0";
+        }
     },
-    currgameData: {
-        teams: [[["",""],["",""],["",""]],[["",""],["",""],["",""]]]
-    },
-    sel: "P1S1",
     PVPUpdate: (selectionId) => {
         let msg = document.getElementById("PVPMsg");
         let spaceshipContainer = document.getElementById("spaceshipContainer");
@@ -385,144 +523,6 @@ let app = {
                     app.sel = "ready";
                     break;
             }
-        }
-    },
-    PVPStatsUpdate: (selectionId) => {
-        let spaceshipName = document.getElementById("spaceshipName");
-        let spaceshipStatHP = document.getElementById("spaceshipStatHP");
-        let spaceshipStatSPD = document.getElementById("spaceshipStatSPD");
-        let spaceshipStatGAS = document.getElementById("spaceshipStatGAS");
-        let weaponName = document.getElementById("weaponName");
-        let weaponStatDMG = document.getElementById("weaponStatDMG");
-        let weaponStatSPD = document.getElementById("weaponStatSPD");
-        let weaponStatFRQ = document.getElementById("weaponStatFRQ");
-        let type = selectionId.substr(0,selectionId.length-1);
-        if(type=="spaceship") {
-            spaceshipName.innerHTML=app.ships[selectionId].name;
-            spaceshipStatHP.style.width = `${(~~(app.ships[selectionId].HP/app.ships.shipmax.HP*100))}%`;
-            spaceshipStatSPD.style.width = `${(~~(app.ships[selectionId].boost/app.ships.shipmax.boost*100))}%`;
-            spaceshipStatGAS.style.width = `${(~~(app.ships[selectionId].gas/app.ships.shipmax.gas*100))}%`;
-            weaponName.innerHTML="Weapon";
-            weaponStatDMG.style.width = "0";
-            weaponStatSPD.style.width = "0";
-            weaponStatFRQ.style.width = "0";
-        } else if(type=="weapon") {
-            spaceshipName.innerHTML="Ship";
-            spaceshipStatHP.style.width = "0";
-            spaceshipStatSPD.style.width = "0";
-            spaceshipStatGAS.style.width = "0";
-            weaponName.innerHTML=app.weapons[selectionId].name;
-            weaponStatDMG.style.width = `${(~~(app.weapons[selectionId].dmg/app.weapons.weaponmax.dmg*100))}%`;
-            weaponStatSPD.style.width = `${(~~(app.weapons[selectionId].v/app.weapons.weaponmax.v*100))}%`;
-            weaponStatFRQ.style.width = `${(~~(app.weapons.weaponmax.freq/app.weapons[selectionId].freq*100))}%`;
-        } else {
-            spaceshipName.innerHTML="Ship";
-            spaceshipStatHP.style.width = "0";
-            spaceshipStatSPD.style.width = "0";
-            spaceshipStatGAS.style.width = "0";
-            weaponName.innerHTML="Weapon";
-            weaponStatDMG.style.width = "0";
-            weaponStatSPD.style.width = "0";
-            weaponStatFRQ.style.width = "0";
-        }
-    },
-    menuItems: {
-        soundMenu: [["soundWith"],["soundWithout"]],
-        mainMenu: [["mainPVP"],["mainControls"]],
-        controlsMenu: [["controlsBack"]],
-        PVPMenu: [["spaceship1","spaceship2","spaceship3"],["PVPBack"]],
-        PVPMenuW: [["weapon1","weapon2","weapon3"],["PVPBack"]]
-    },
-    gameControls: {
-        P1Boost:"ArrowUp",
-        P1TurnL:"ArrowLeft",
-        P1TurnR:"ArrowRight",
-        P1StrafeL:"M",
-        P1StrafeR:",",
-        P1Back:"ArrowDown",
-        P1Shoot:".",
-        P1Special:"N",
-        P2Boost:"R",
-        P2TurnL:"D",
-        P2TurnR:"G",
-        P2StrafeL:"1",
-        P2StrafeR:"2",
-        P2Back:"F",
-        P2Shoot:"3",
-        P2Special:"º"
-    },
-    gameControlsGP: {
-        P1Boost:"",
-        P1TurnL:"",
-        P1TurnR:"",
-        P1StrafeL:"",
-        P1StrafeR:"",
-        P1Back:"",
-        P1Shoot:"",
-        P1Special:"",
-        P2Boost:"GP0[12]",
-        P2TurnL:"GP0[15]",
-        P2TurnR:"GP0[13]",
-        P2StrafeL:"GP0[6]",
-        P2StrafeR:"GP0[7]",
-        P2Back:"GP0[14]",
-        P2Shoot:"GP0[2]",
-        P2Special:"GP0[3]"
-    },
-    ships: {
-        shipmax: {
-            HP: 650,
-            boost: 2400,
-            gas: 1200
-        },
-        spaceship1: {
-            name: "Tincan",
-            img: {blue:"img/ship1-b.svg",red:"img/ship1-r.svg"},
-            HP: 500,
-            boost: 1800,
-            gas: 800
-        },
-        spaceship2: {
-            name: "Trooper",
-            img: {blue:"img/ship2-b.svg",red:"img/ship2-r.svg"},
-            HP: 350,
-            boost: 2400,
-            gas: 1200
-        },
-        spaceship3: {
-            name: "Heavy",
-            img: {blue:"img/ship3-b.svg",red:"img/ship3-r.svg"},
-            HP: 650,
-            boost: 1200,
-            gas: 400
-        }
-    },
-    weapons: {
-        weaponmax: {
-            v: 3000,
-            freq: 0.15,
-            dmg: 40
-        },
-        weapon1: {
-            name: "Classic",
-            v: 1200,
-            type: 'single',
-            freq: 0.2,
-            dmg: 15
-        },
-        weapon2: {
-            name: "Double",
-            v: 800,
-            type: 'double',
-            freq: 0.15,
-            dmg: 8
-        },
-        weapon3: {
-            name: "Cannon",
-            v: 3000,
-            type: 'single',
-            freq: 1.5,
-            dmg: 40
         }
     }
 }
