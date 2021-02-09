@@ -28,6 +28,7 @@ class Physics {
                 player.vy -= Col.ny * pv;
                 if (pv<-300) player.HP += Math.floor(pv * (1/this.ce - 1) / 10);
             }
+            player.hit(Col.nx,Col.ny,pv*(1/this.ce-1));
             return true;
         }
         return false;
@@ -55,6 +56,7 @@ class Physics {
                 player.vy -= ny * pv;
                 if (pv<-300) player.HP += Math.floor(pv * (1/this.ce - 1) / 10);
             }
+            player.hit(nx,ny,pv*(1/this.ce-1));
             return true;
         }
         return false;
@@ -86,6 +88,7 @@ class Physics {
                 player.HP += dmg;
                 Col.HP += dmg;
             }
+            player.hit(nx,ny,pv*(1/this.ce-1));
         }
     }
     wbCollisions(bullet) {

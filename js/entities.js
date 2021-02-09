@@ -139,16 +139,37 @@ class Spaceship extends Sprite {
         this.r = 25;
         this.shooting = false;
     }
+    hit(nx,ny,pv) {
+        let vMod = physics.vMod(this.vx,this.vy);
+        let pnx = (this.vx)/vMod+Math.sign(this.vx)*Math.abs(ny)*0.7+nx*0.3; 
+        let pny = (this.vy)/vMod+Math.sign(this.vy)*Math.abs(nx)*0.7+ny*0.3;
+        let pMod = physics.vMod(pnx,pny);
+        pnx /= pMod; 
+        pny /= pMod;
+        pv = Math.abs(pv)/350;
+        let vp = vMod/1000-40*pv;
+        for (let i = 0; i<3; i++) {
+            let rnd = Math.random();
+            let rnd2 = Math.random();
+            let w = (~~(2+pv*5+rnd*4));
+            let t = 300+rnd*300;
+            let rnd5 = 0.5+rnd*0.5;
+            let rnd52 = 0.5+rnd2*0.5;
+            let cS = {r:205*rnd5,g:205*rnd52,b:0,a:1};
+            let cF = {r:105*rnd5,g:105*rnd52,b:0,a:0};
+            app.game.particles.push(new Particle((this.x-this.r*nx)+rnd*10-7,(this.y-this.r*ny)+rnd2*10-7,pnx*(vMod/700+pv)*rnd5,pny*(vMod/700+pv)*rnd52,w,t,cS,cF));
+        }
+    }
     explode() {
-        for (let a = 0; a<6.28; a+=0.2) {
+        for (let a = 0; a<6.28; a+=0.12) {
             let rnd = Math.random();
             let mx = Math.cos(a+rnd);
             let my = Math.sin(a+rnd);
             let v = 0.1+rnd*0.5;
-            let w = 5+(~~(rnd*6));
+            let w = 3+(~~(rnd*8));
             let t = 500+rnd*1000;
             let rnd50 = (~~(rnd*50));
-            let cS = {r:255-rnd50,g:50,b:0,a:1};
+            let cS = {r:255-rnd50,g:100+rnd50,b:0,a:1};
             let cF = {r:255-rnd50,g:255-rnd50,b:0,a:0};
             app.game.particles.push(new Particle(this.x+rnd*40-20,this.y+rnd*40-20,v*mx,v*my,w,t,cS,cF));
         }
@@ -250,7 +271,6 @@ class Bullet extends Entity {
             vx = this.vx/1500; 
             vy = this.vy/1500;
         }
-        
         let color = this.color.match(/\d+/g);
         for (let i = 0; i<3; i++) {
             let rnd = Math.random();
