@@ -139,6 +139,20 @@ class Spaceship extends Sprite {
         this.r = 25;
         this.shooting = false;
     }
+    explode() {
+        for (let a = 0; a<6.28; a+=0.2) {
+            let rnd = Math.random();
+            let mx = Math.cos(a+rnd);
+            let my = Math.sin(a+rnd);
+            let v = 0.1+rnd*0.5;
+            let w = 5+(~~(rnd*6));
+            let t = 500+rnd*1000;
+            let rnd50 = (~~(rnd*50));
+            let cS = {r:255-rnd50,g:50,b:0,a:1};
+            let cF = {r:255-rnd50,g:255-rnd50,b:0,a:0};
+            app.game.particles.push(new Particle(this.x+rnd*40-20,this.y+rnd*40-20,v*mx,v*my,w,t,cS,cF));
+        }
+    }
     shoot() {
         if (this.wrefresh<=0) {
             let a = this.a-Math.PI/2
@@ -176,14 +190,31 @@ class Spaceship extends Sprite {
 }
 
 class Particle extends Entity {
-    constructor(x, y, vx, vy, w, t, colorS, colorF = "") {
+    constructor(x, y, vx, vy, w, t, colorS, colorF = {r:0,g:0,b:0,a:0}) {
         super(x,y,null,true,vx,vy);
         this.w = w;
-        this.cS = colorS; // In RGB {r:255,g:255,b:255}
-        this.cF = colorF; // In RGB
+        this.cS = colorS; // In RGBA ex: {r:255,g:255,b:255,a:1}
+        this.cF = colorF; // In RGBA
+        this.c = "rgba("+colorS.r+","+colorS.g+","+colorS.b+","+colorS.a+")";
         this.t = t;
+        this.dt = 0;
     }
-    draw() {
+    step(dT) {
+        this.draw();
+        this.dt += dT;
+        if (this.dt>this.t) return false;
+        this.c  = "rgba("+(this.cS.r+(this.cF.r-this.cS.r)*this.dt/this.t)
+        +","+(this.cS.g+(this.cF.g-this.cS.g)*this.dt/this.t)
+        +","+(this.cS.b+(this.cF.b-this.cS.b)*this.dt/this.t)
+        +","+(this.cS.a+(this.cF.a-this.cS.a)*this.dt/this.t)
+        +")";
+        this.x += this.vx*dT;
+        this.y += this.vy*dT;
+        return true;
+    }
+    draw(){
+        ctx.fillStyle = this.c;
+        ctx.fillRect(this.x, this.y, this.w, this.w);
     }
 }
 
@@ -210,5 +241,26 @@ class Bullet extends Entity {
         ctx.lineWidth = this.r;
         ctx.stroke();
         ctx.restore();
+    }
+    hit(nx,ny) {
+        let pv = 2 * 0.7 * physics.pE(nx,ny,this.vx,this.vy);
+        let vx = (this.vx - nx * pv)/1000; 
+        let vy = (this.vy - ny * pv)/1000;
+        if (pv>0) {
+            vx = this.vx/1500; 
+            vy = this.vy/1500;
+        }
+        
+        let color = this.color.match(/\d+/g);
+        for (let i = 0; i<3; i++) {
+            let rnd = Math.random();
+            let w = (~~(this.r/2+rnd*4));
+            let t = 300+rnd*300;
+            let rnd5 = 0.5+rnd*0.5;
+            let rnd52 = 1-rnd*0.5;
+            let cS = {r:color[0]*rnd5,g:color[1]*rnd5,b:color[2]*rnd5,a:1};
+            let cF = {r:255*rnd5,g:255*rnd5,b:255*rnd5,a:0};
+            app.game.particles.push(new Particle(this.x+rnd*20-10,this.y+rnd*20-10,vx*rnd5,vy*rnd52,w,t,cS,cF));
+        }
     }
 }

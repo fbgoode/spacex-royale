@@ -1,6 +1,5 @@
 let app = {
     init: () => {
-        //aIntro.play();
         app.controlsManager = new ControlsManager(noControls);
         document.addEventListener('keydown', (e) => {app.controlsManager.kdmDelegate(e)});
         document.addEventListener('keyup', (e) => {app.controlsManager.kumDelegate(e)});
@@ -131,7 +130,12 @@ let app = {
                 aClassic.volume = 0;
                 aDouble.volume = 0;
                 aCannon.volume = 0;
-                app.playIntro();
+                if (debug) {
+                    app.gameData.teams = [[['spaceship2','weapon2'],['spaceship1','weapon1'],['spaceship3','weapon3']],[['spaceship1','weapon1'],['spaceship2','weapon2'],['spaceship3','weapon3']]];
+                    app.doAction("PVPContinue");
+                } else {
+                    app.playIntro();
+                }
                 break;
             case "mainPVP":
                 app.menu = new Menu("t-PVPMenu","gameScreen",app.menuItems.PVPMenu,
@@ -535,5 +539,5 @@ let aSwoosh = document.getElementById("aSwoosh");
 aIntro.volume = 0.5;
 aMenu.volume = 0.2;
 aMenu.loop = true;
-
+let debug = false;
 app.init();

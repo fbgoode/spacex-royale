@@ -17,13 +17,16 @@ let aCannon = document.getElementById("aCannon");
 aCannon.volume = 0.08;
 
 class Game {
+
+    particles = [];
+
     constructor (teams) {
-        this.team1 = [new Spaceship(app.ships[teams[0][0][0]],app.weapons[teams[0][0][1]],"blue",app.ships[teams[0][0][0]].img.blue,60,60,100,980,90,true),
-                        new Spaceship(app.ships[teams[0][1][0]],app.weapons[teams[0][1][1]],"blue",app.ships[teams[0][1][0]].img.blue,60,60,100,980,90,true),
-                        new Spaceship(app.ships[teams[0][2][0]],app.weapons[teams[0][2][1]],"blue",app.ships[teams[0][2][0]].img.blue,60,60,100,980,90,true),];
-        this.team2 = [new Spaceship(app.ships[teams[1][0][0]],app.weapons[teams[1][0][1]],"red",app.ships[teams[1][0][0]].img.red,60,60,1820,100,270,true),
-                        new Spaceship(app.ships[teams[1][1][0]],app.weapons[teams[1][1][1]],"red",app.ships[teams[1][1][0]].img.red,60,60,1820,100,270,true),
-                        new Spaceship(app.ships[teams[1][2][0]],app.weapons[teams[1][2][1]],"red",app.ships[teams[1][2][0]].img.red,60,60,1820,100,270,true),];
+        this.team1 = [new Spaceship(app.ships[teams[0][0][0]],app.weapons[teams[0][0][1]],"rgb(127, 146, 255)",app.ships[teams[0][0][0]].img.blue,60,60,100,980,90,true),
+                        new Spaceship(app.ships[teams[0][1][0]],app.weapons[teams[0][1][1]],"rgb(127, 146, 255)",app.ships[teams[0][1][0]].img.blue,60,60,100,980,90,true),
+                        new Spaceship(app.ships[teams[0][2][0]],app.weapons[teams[0][2][1]],"rgb(127, 146, 255)",app.ships[teams[0][2][0]].img.blue,60,60,100,980,90,true),];
+        this.team2 = [new Spaceship(app.ships[teams[1][0][0]],app.weapons[teams[1][0][1]],"rgb(255, 127, 127)",app.ships[teams[1][0][0]].img.red,60,60,1820,100,270,true),
+                        new Spaceship(app.ships[teams[1][1][0]],app.weapons[teams[1][1][1]],"rgb(255, 127, 127)",app.ships[teams[1][1][0]].img.red,60,60,1820,100,270,true),
+                        new Spaceship(app.ships[teams[1][2][0]],app.weapons[teams[1][2][1]],"rgb(255, 127, 127)",app.ships[teams[1][2][0]].img.red,60,60,1820,100,270,true),];
         this.player1 = this.team1[0];
         this.player2 = this.team2[0];
         this.player1.opacity=0;
@@ -132,10 +135,12 @@ class Game {
     checkDeath() {
         if (this.player1.HP <=0 && !this.gamefinished) {
             this.player1.HP = 0;
+            this.player1.explode();
             this.nextShipP1();
         }
         if (this.player2.HP <=0 && !this.gamefinished) {
             this.player2.HP = 0;
+            this.player2.explode();
             this.nextShipP2();
         }
     }
@@ -159,6 +164,7 @@ class Game {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         physics.step(deltaT/1000);
         this.checkDeath();
+        this.renderParticles(deltaT);
         this.render();
         this.renderHUD();
         if (this.player1.shooting) this.player1.shoot();
@@ -186,6 +192,11 @@ class Game {
     render() {
         for (let key in this.visibleEntities) {
             if (this.visibleEntities[key]) this.visibleEntities[key].draw();
+        }
+    }
+    renderParticles(dT) {
+        for (let i in this.particles) {
+            if (!this.particles[i].step(dT)) this.particles.splice(i,1);;
         }
     }
     keydownManager(e) {

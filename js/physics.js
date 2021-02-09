@@ -89,15 +89,25 @@ class Physics {
         }
     }
     wbCollisions(bullet) {
+        let dmin = -80;
+        let nx;
+        let ny;
         for (let W of this.walls) {
             if (this.bWP(W,bullet)) {
                 let d = this.dPnP(W,bullet);
-                if (d<0 && d>-80) {
-                    return true;
+                if (d<0 && d>dmin) {
+                    dmin=d;
+                    nx=W.nx;
+                    ny=W.ny;
                 }
             }
         }
-        return false;
+        if (dmin>-80) {
+            bullet.hit(nx,ny);
+            return true;
+        } else {
+            return false;
+        }
     }
     pbCollisions(bullet) {
         for (let player of this.players) {
@@ -105,6 +115,10 @@ class Physics {
                 player.HP -= bullet.dmg;
                 player.vx += bullet.dmg * bullet.vx/500;
                 player.vy += bullet.dmg * bullet.vy/500;
+                let mod = this.dPP(bullet,player);
+                let nx = (bullet.x-player.x)/mod;
+                let ny = (bullet.y-player.y)/mod;
+                bullet.hit(nx,ny);
                 return true;
             }
         }
