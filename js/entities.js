@@ -124,6 +124,35 @@ class Sprite extends Entity {
     }
 }
 
+class Special extends Sprite {
+    constructor(type,x = 0,y = 0,width = 50,height = 50,a = 0, moves = false, vx0 = 0, vy0 = 0) {
+        let src = "";
+        switch (type) {
+            case "immunity":
+                src="img/immunity.svg";
+                break;
+        }
+        if (x==0 && y==0) [x,y] = app.game.randPos(width,height);
+        super(src,width,height,x,y,a,moves,vx0,vy0);
+        this.opacity = 0;
+    }
+    draw() {
+        super.draw();
+        let arnd = Math.random()*6.283;
+        let rnd = Math.random();
+        let rnd2 = Math.random();
+        let rnd3 = Math.random();
+        let mx = Math.cos(arnd);
+        let my = Math.sin(arnd);
+        let v = 0.04+rnd*0.02;
+        let w = 3+(~~(rnd2*3));
+        let t = 500+rnd3*1000;
+        let cS = {r:255*rnd,g:255*rnd2,b:255*rnd3,a:1};
+        let cF = {r:255*rnd,g:255*rnd2,b:255*rnd3,a:0};
+        app.game.particles.push(new Particle(this.x+rnd2*40-20,this.y+rnd3*40-20,v*mx,v*my,w,t,cS,cF));
+    }
+}
+
 class Spaceship extends Sprite {
     constructor(stats,weapon,color,src,width,height,x,y,a = 0, moves = false, vx0 = 0, vy0 = 0) {
         super(src,width,height,x,y,a,moves,vx0,vy0);
@@ -138,6 +167,49 @@ class Spaceship extends Sprite {
         this.wrefresh = 0;
         this.r = 25;
         this.shooting = false;
+    }
+    draw() {
+        super.draw();
+        if (this.af) {
+            this.boost();
+            this.boost();
+        }
+        if (this.al) this.gas(0);
+        if (this.ar) this.gas(3.1416);
+        if (this.ab) this.gas(-1.5708);
+    }
+    gas(an) {
+        let arnd = Math.random()*0.3;
+        let rnd = Math.random();
+        let rnd2 = Math.random();
+        let rnd3 = Math.random();
+        let a = this.a+an+arnd-0.15;
+        let mx = Math.cos(a);
+        let my = Math.sin(a);
+        let v = 0.4+rnd*0.1;
+        let w = 4+(~~(rnd2*2));
+        let t = 150+rnd3*40;
+        let rnd7 = 0.7+rnd*0.3;
+        let cS = {r:255*rnd7,g:255*rnd7,b:255*rnd7,a:1};
+        let cF = {r:255*rnd7,g:255*rnd7,b:255*rnd7,a:0};
+        app.game.particles.push(new Particle(this.x+this.r*Math.cos(this.a+an)+rnd2*4-2,this.y+this.r*Math.sin(this.a+an)+rnd3*4-2,this.vx/1000+v*mx,this.vy/1000+v*my,w,t,cS,cF));
+    }
+    boost() {
+        let arnd = Math.random()*0.4;
+        let rnd = Math.random();
+        let rnd2 = Math.random();
+        let rnd3 = Math.random();
+        let a = this.a+1.5708+arnd-0.2;
+        let mx = Math.cos(a);
+        let my = Math.sin(a);
+        let v = (2+rnd*0.6)*this.stats.boost/10000;
+        let w = 4+(~~(rnd2*4));
+        let t = 250+rnd3*100;
+        let rnd5 = 0.5+rnd*0.5;
+        let rnd52 = 0.5+rnd2*0.5;
+        let cS = {r:255*rnd5,g:50*rnd52,b:0,a:1};
+        let cF = {r:255,g:255,b:255,a:0};
+        app.game.particles.push(new Particle(this.x+this.r*Math.cos(this.a+1.5708)+rnd2*12-6,this.y+this.r*Math.sin(this.a+1.5708)+rnd3*12-6,this.vx/1000+v*mx,this.vy/1000+v*my,w,t,cS,cF));
     }
     hit(nx,ny,pv) {
         let vMod = physics.vMod(this.vx,this.vy);

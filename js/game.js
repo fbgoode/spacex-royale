@@ -19,6 +19,7 @@ aCannon.volume = 0.08;
 class Game {
 
     particles = [];
+    special = null;
 
     constructor (teams) {
         this.team1 = [new Spaceship(app.ships[teams[0][0][0]],app.weapons[teams[0][0][1]],"rgb(127, 146, 255)",app.ships[teams[0][0][0]].img.blue,60,60,100,980,90,true),
@@ -189,6 +190,10 @@ class Game {
         }
         ctx.restore();
     }
+    newSpecial() {
+        this.special = new Special("immunity");
+        this.visibleEntities.special = this.special;
+    }
     render() {
         for (let key in this.visibleEntities) {
             if (this.visibleEntities[key]) this.visibleEntities[key].draw();
@@ -308,6 +313,28 @@ class Game {
                 this.player2.shooting = false;
                 break;
         }
+    }
+    randPos(w,h) {
+        let success = true;
+        let x;
+        let y;
+        do {
+            x = (~~(w/2+Math.random()*(1920-w)));
+            y = (~~(h/2+Math.random()*(1080-h)));
+            for (let key in this.visibleEntities) {
+                if ((x-w)-(this.visibleEntities[key].x+this.visibleEntities[key].width)>0 ||
+                            (x+w)-(this.visibleEntities[key].x-this.visibleEntities[key].width)<0 ||
+                            (y-h)-(this.visibleEntities[key].y+this.visibleEntities[key].height)>0 ||
+                            (y+h)-(this.visibleEntities[key].y-this.visibleEntities[key].height)<0)
+                {
+                    success = true;
+                } else {
+                    success = false;
+                    break;
+                }
+            }
+        } while (!success)
+        return [x,y];
     }
 
 }
