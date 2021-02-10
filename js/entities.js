@@ -173,6 +173,7 @@ class Spaceship extends Sprite {
             let cF = {r:255-rnd50,g:255-rnd50,b:0,a:0};
             app.game.particles.push(new Particle(this.x+rnd*40-20,this.y+rnd*40-20,v*mx,v*my,w,t,cS,cF));
         }
+        physics.explosion(this);
     }
     shoot() {
         if (this.wrefresh<=0) {

@@ -91,6 +91,22 @@ class Physics {
             player.hit(nx,ny,pv*(1/this.ce-1));
         }
     }
+    explosion(P) {
+        for (let player of this.players) {
+            if (player.opacity >= 1 && (player.x!=P.x || player.y!=P.y)) {
+                let d = this.dPP(P,player);
+                if (d<500) {
+                    let v = (500-d)/2+(500-d)**2/80;
+                    let nx = player.x-P.x;
+                    let ny = player.y-P.y;
+                    let mod = this.vMod(nx,ny);
+                    player.vx += v*nx/mod;
+                    player.vy += v*ny/mod;
+                    player.HP -= v/10;
+                }
+            }
+        }
+    }
     wbCollisions(bullet) {
         let dmin = -80;
         let nx;
@@ -114,7 +130,7 @@ class Physics {
     }
     pbCollisions(bullet) {
         for (let player of this.players) {
-            if (this.dCC(bullet,player)<=0) {
+            if (player.opacity >= 1 && this.dCC(bullet,player)<=0) {
                 player.HP -= bullet.dmg;
                 player.vx += bullet.dmg * bullet.vx/500;
                 player.vy += bullet.dmg * bullet.vy/500;
