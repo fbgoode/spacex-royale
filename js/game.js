@@ -56,13 +56,16 @@ class Game {
         this.life1 = new LifeBar("rgba(50, 84, 168, 0.5)",890,10,70,30);
         this.life2 = new LifeBar("rgba(168, 64, 50, 0.5)",890,10,1850,1050,180);
         let block = new Block("rgba(255, 255, 255, 0.3)",700,300,1920/2,1080/2);
+        let block2 = new Polyblock([{x:0,y:1080},{x:0,y:500},{x:1000,y:700},{x:600,y:20},{x:1920,y:0},{x:1920,y:400},{x:1800,y:500},{x:1900,y:700},{x:1600,y:1080}],true);
         let edges = [
             new Wall(1920,1920/2,0,0,1),
             new Wall(1920,1920/2,1080,0,-1),
             new Wall(1080,0,1080/2,1,0),
             new Wall(1080,1920,1080/2,-1,0)
         ];
-        physics = new Physics(0.006,0.8,[this.player1,this.player2],[...edges,...block.walls],block.salients);
+        //physics = new Physics(0.006,0.8,[this.player1,this.player2],[...edges,...block.walls,...block2.walls],[...block.salients,...block2.salients]);
+        physics = new Physics(0.006,0.8,[this.player1,this.player2],[...edges,...block.walls],[...block.salients]);
+        //this.visibleEntities = {block1:block,block2:block2};
         this.visibleEntities = {block1:block};
         this.visibleEntities.player1 = this.player1;
         this.visibleEntities.player2 = this.player2;
@@ -92,7 +95,7 @@ class Game {
         let dmin = 0;
         let mod = 0;
         for (let player of [this.player1,this.player2]) {
-            let d = physics.dCC(this.special,player);
+            let d = Physics.dCC(this.special,player);
             if (d<dmin) {
                 dmin = d;
                 Col = player;
@@ -377,26 +380,26 @@ class Game {
                 break;
         }
     }
-    randPos(w,h) {
-        let success = true;
+    randPos(r) {
         let x;
         let y;
         do {
-            x = (~~(w/2+Math.random()*(1920-w)));
-            y = (~~(h/2+Math.random()*(1080-h)));
+            x = (~~(r+Math.random()*(1920-2*r)));
+            y = (~~(r+Math.random()*(1080-2*r)));
+            let dmin = 2000;
             for (let key in this.visibleEntities) {
-                if ((x-w)-(this.visibleEntities[key].x+this.visibleEntities[key].width)>0 ||
-                            (x+w)-(this.visibleEntities[key].x-this.visibleEntities[key].width)<0 ||
-                            (y-h)-(this.visibleEntities[key].y+this.visibleEntities[key].height)>0 ||
-                            (y+h)-(this.visibleEntities[key].y-this.visibleEntities[key].height)<0)
-                {
-                    success = true;
-                } else {
-                    success = false;
-                    break;
+                if (key.substr(0,key.length-1)=="player") {
+                    let d = Physics.dPC({x:x,y:y},this.visibleEntities[key]);
+                    if (Math.abs(d)<Math.abs(dmin)) dmin = d;
+                } else if (key!="special") {
+                    for (let W of this.visibleEntities[key].walls) {
+                        let d = Physics.dPnP(W,{x:x,y:y});
+                        if (Math.abs(d)<Math.abs(dmin)) dmin = d;
+                    }
                 }
             }
-        } while (!success)
+            if (dmin-r>=0) break;
+        } while (true)
         return [x,y];
     }
 

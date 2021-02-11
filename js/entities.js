@@ -34,6 +34,81 @@ class Entity {
     }
 }
 
+class Polygon extends Entity {
+    constructor(points = [{x:100,y:100},{x:200,y:100},{x:200,y:200},{x:100,y:200}], outer = false, color = "rgba(255, 255, 255, 0.3)", x = 0, y = 0, a = 0, moves = false, vx0 = 0, vy0 = 0) {
+        super(x, y, a, moves, vx0, vy0);
+        this.points = points;
+        this.color = color;
+        this.outer = outer;
+    }
+    draw() {
+        ctx.save();
+        ctx.fillStyle = this.color;
+        ctx.translate(this.x, this.y);
+        if (this.a) {
+            ctx.rotate(this.a);
+        }
+        ctx.beginPath();
+        if (this.outer) this.drawOuter();
+        else this.drawInner();
+        ctx.restore();
+    }
+    drawOuter() {
+        ctx.moveTo(0,0);
+        ctx.lineTo(0,1080);
+        ctx.lineTo(1920,1080);
+        ctx.lineTo(1920,0);
+        ctx.closePath();
+        this.drawInner();
+    }
+    drawInner() {
+        ctx.moveTo(this.points[0].x,this.points[0].y);
+        for (let i=1;i<this.points.length;i++) {
+            ctx.lineTo(this.points[i].x,this.points[i].y);
+        }
+        ctx.closePath();
+        ctx.fill();
+    }
+}
+
+class Polyblock extends Polygon {
+    // IMPORTANT : If normal polygon (inner), define points clockwise (counterclockwise in canvas coordinates). If outer, the opposite.
+    // TODO: Arreglar esto
+    constructor(points = [{x:100,y:100},{x:100,y:200},{x:200,y:200},{x:200,y:100}], outer = false, color = "rgba(255, 255, 255, 0.3)", x = 0, y = 0, a = 0, moves = false, vx0 = 0, vy0 = 0) {
+        super(points, outer, color, x, y, a, moves, vx0, vy0);
+        this.buildWalls();
+    }
+    buildWalls() {
+        this.walls = [];
+        this.salients = [];
+        let d0 = Physics.dPP(this.points[0],this.points[this.points.length-1]);
+        let nx0 = -(this.points[0].y - this.points[this.points.length-1].y)/d0;
+        let ny0 = (this.points[0].x - this.points[this.points.length-1].x)/d0;
+        for (let i=1; i<=this.points.length; i++) {
+            let sub = 0;
+            if (i==this.points.length) sub = i;
+            let d = Physics.dPP(this.points[i-sub],this.points[i-1]);
+            let x = this.points[i-1].x + (this.points[i-sub].x - this.points[i-1].x)/2;
+            let y = this.points[i-1].y + (this.points[i-sub].y - this.points[i-1].y)/2;
+            let nx = -(this.points[i-sub].y - this.points[i-1].y)/d;
+            let ny = (this.points[i-sub].x - this.points[i-1].x)/d;
+            if (this.a) {
+                [x,y] = Physics.vRotate(x,y,this.a);
+                [nx,ny] = Physics.vRotate(x,y,this.a);
+            }
+            x += this.x;
+            y += this.y;
+            this.walls.push(new Wall(d, x, y, nx, ny));
+            if (Physics.pVz(nx,ny,nx0,ny0)>0) {
+                let [x0,y0] = this.a ? Physics.vRotate(this.points[i-1].x,this.points[i-1].y,this.a) : [this.points[i-1].x,this.points[i-1].y];
+                this.salients.push(new Point(x0,y0));
+            }
+            nx0 = nx;
+            ny0 = ny;
+        }
+    }
+}
+
 class LifeBar extends Entity {
     constructor(color,width,height,x,y,a = 0, moves = false, vx0 = 0, vy0 = 0) {
         super(x, y, a, moves, vx0, vy0);
@@ -138,7 +213,7 @@ class Special extends Sprite {
                 src="img/bomb.svg";
                 break;
         }
-        if (x==0 && y==0) [x,y] = app.game.randPos(width,height);
+        if (x==0 && y==0) [x,y] = app.game.randPos(width/2);
         super(src,width,height,x,y,a,moves,vx0,vy0);
         this.opacity = 0;
         this.r=width/2;
@@ -278,10 +353,10 @@ class Spaceship extends Sprite {
                 },100);
             }
         }
-        let vMod = physics.vMod(this.vx,this.vy);
+        let vMod = Physics.vMod(this.vx,this.vy);
         let pnx = (this.vx)/vMod+Math.sign(this.vx)*Math.abs(ny)*0.7+nx*0.3; 
         let pny = (this.vy)/vMod+Math.sign(this.vy)*Math.abs(nx)*0.7+ny*0.3;
-        let pMod = physics.vMod(pnx,pny);
+        let pMod = Physics.vMod(pnx,pny);
         pnx /= pMod; 
         pny /= pMod;
         pv = Math.abs(pv)/350;
@@ -420,7 +495,7 @@ class Bullet extends Entity {
         ctx.restore();
     }
     hit(nx,ny) {
-        let pv = 2 * 0.7 * physics.pE(nx,ny,this.vx,this.vy);
+        let pv = 2 * 0.7 * Physics.pE(nx,ny,this.vx,this.vy);
         let vx = (this.vx - nx * pv)/1000; 
         let vy = (this.vy - ny * pv)/1000;
         if (pv>0) {

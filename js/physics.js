@@ -12,7 +12,7 @@ class Physics {
         let dmin = 0;
         for (let W of this.walls) {
             if (this.bWP(W,player)) {
-                let d = this.dPnC(W,player);
+                let d = Physics.dPnC(W,player);
                 if (d<dmin && d>-2*player.r) {
                     dmin = d;
                     Col = W;
@@ -22,7 +22,7 @@ class Physics {
         if (dmin) {
             player.x -= Col.nx * 2 * dmin;
             player.y -= Col.ny * 2 * dmin;
-            let pv = 2 * this.ce * this.pE(Col.nx,Col.ny,player.vx,player.vy);
+            let pv = 2 * this.ce * Physics.pE(Col.nx,Col.ny,player.vx,player.vy);
             if (pv < 0) {
                 player.vx -= Col.nx * pv; 
                 player.vy -= Col.ny * pv;
@@ -38,11 +38,11 @@ class Physics {
         let dmin = 0;
         let mod = 0;
         for (let P of this.salients) {
-            let d = this.dPC(P,player);
+            let d = Physics.dPC(P,player);
             if (d<dmin) {
                 dmin = d;
                 Col = P;
-                mod = this.dPP(P,player);
+                mod = Physics.dPP(P,player);
             }
         }
         if (dmin) {
@@ -50,7 +50,7 @@ class Physics {
             let ny = (player.y-Col.y)/mod;
             player.x -= nx * 2 * dmin;
             player.y -= ny * 2 * dmin;
-            let pv = 2 * this.ce * this.pE(nx,ny,player.vx,player.vy);
+            let pv = 2 * this.ce * Physics.pE(nx,ny,player.vx,player.vy);
             if (pv < 0) {
                 player.vx -= nx * pv; 
                 player.vy -= ny * pv;
@@ -66,11 +66,11 @@ class Physics {
         let dmin = 0;
         let mod = 0;
         for (let C of rest) {
-            let d = this.dCC(C,player);
+            let d = Physics.dCC(C,player);
             if (d<dmin) {
                 dmin = d;
                 Col = C;
-                mod = this.dPP(C,player);
+                mod = Physics.dPP(C,player);
             }
         }
         if (dmin) {
@@ -78,7 +78,7 @@ class Physics {
             let ny = (player.y-Col.y)/mod;
             player.x -= nx * 2 * dmin;
             player.y -= ny * 2 * dmin;
-            let pv = this.ce * this.pE(nx,ny,player.vx-Col.vx,player.vy-Col.vy);
+            let pv = this.ce * Physics.pE(nx,ny,player.vx-Col.vx,player.vy-Col.vy);
             player.vx -= nx * pv; 
             player.vy -= ny * pv;
             Col.vx += nx * pv; 
@@ -96,12 +96,12 @@ class Physics {
         aExplosion.play();
         for (let player of this.players) {
             if (player.opacity >= 1 && (player.x!=P.x || player.y!=P.y)) {
-                let d = this.dPP(P,player);
+                let d = Physics.dPP(P,player);
                 if (d<500) {
                     let v = (500-d)/2+(500-d)**2/80;
                     let nx = player.x-P.x;
                     let ny = player.y-P.y;
-                    let mod = this.vMod(nx,ny);
+                    let mod = Physics.vMod(nx,ny);
                     player.vx += v*nx/mod;
                     player.vy += v*ny/mod;
                     player.HP -= v/10;
@@ -115,7 +115,7 @@ class Physics {
         let ny;
         for (let W of this.walls) {
             if (this.bWP(W,bullet)) {
-                let d = this.dPnP(W,bullet);
+                let d = Physics.dPnP(W,bullet);
                 if (d<0 && d>dmin) {
                     dmin=d;
                     nx=W.nx;
@@ -134,11 +134,11 @@ class Physics {
     }
     pbCollisions(bullet) {
         for (let player of this.players) {
-            if (player.opacity >= 1 && this.dCC(bullet,player)<=0) {
+            if (player.opacity >= 1 && Physics.dCC(bullet,player)<=0) {
                 player.HP -= bullet.dmg;
                 player.vx += bullet.dmg * bullet.vx/500;
                 player.vy += bullet.dmg * bullet.vy/500;
-                let mod = this.dPP(bullet,player);
+                let mod = Physics.dPP(bullet,player);
                 let nx = (bullet.x-player.x)/mod;
                 let ny = (bullet.y-player.y)/mod;
                 bullet.hit(nx,ny);
@@ -192,7 +192,7 @@ class Physics {
                 ay += player.stats.gas * Math.sin(player.a);
             }
             // Add drag force to accelerations
-            let mod = this.vMod(player.vx,player.vy);
+            let mod = Physics.vMod(player.vx,player.vy);
             ax -= player.vx * this.cd * mod;
             ay -= player.vy * this.cd * mod;
             // Increment velocities from accelerations
@@ -223,35 +223,45 @@ class Physics {
             x: W.x+W.l*W.ny/2,
             y: W.y-W.l*W.nx/2
         };
-        let d = this.dPnP(Pn,P);
+        let d = Physics.dPnP(Pn,P);
         return (d<=0 && W.l>=-d);
     }
     // Distance between point and point
-    dPP(P1,P2) {
+    static dPP(P1,P2) {
         return Math.sqrt((P1.x-P2.x)**2+(P1.y-P2.y)**2);
     }
     // Distance between plane and point
-    dPnP(Pn,P) {
-        return this.pE(Pn.nx,Pn.ny,P.x-Pn.x,P.y-Pn.y);
+    static dPnP(Pn,P) {
+        return Physics.pE(Pn.nx,Pn.ny,P.x-Pn.x,P.y-Pn.y);
     }
     // Distance between plane and circle
-    dPnC(Pn,C) {
-        return (this.dPnP(Pn,C)-C.r);
+    static dPnC(Pn,C) {
+        return (Physics.dPnP(Pn,C)-C.r);
     }
     // Distance between point and circle
-    dPC(P,C) {
-        return (this.dPP(P,C)-C.r);
+    static dPC(P,C) {
+        return (Physics.dPP(P,C)-C.r);
     }
     // Distance between circle and circle
-    dCC(C1,C2) {
-        return (this.dPP(C1,C2)-C1.r-C2.r);
+    static dCC(C1,C2) {
+        return (Physics.dPP(C1,C2)-C1.r-C2.r);
     }
     // Scalar product
-    pE(x,y,x2,y2) {
+    static pE(x,y,x2,y2) {
         return (x*x2+y*y2);
     }
+    // Cross product z component
+    static pVz(x,y,x2,y2) {
+        return (x*y2-y*x2);
+    }
     // Module of vector
-    vMod(x,y) {
+    static vMod(x,y) {
         return Math.sqrt(x**2+y**2);
+    }
+    // Rotate vector
+    static vRotate(x,y,a) {
+        let ax = math.cos(a);
+        let ay = math.sin(a);
+        return [ax*x-ay*y, ay*x+ax*y];
     }
 }
