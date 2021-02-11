@@ -116,7 +116,12 @@ let app = {
     doAction: (id) => {
         switch (id) {
             case "soundWith":
-                app.playIntro();
+                if (debug) {
+                    app.gameData.teams = [[['spaceship2','weapon2'],['spaceship1','weapon1'],['spaceship3','weapon3']],[['spaceship1','weapon1'],['spaceship2','weapon2'],['spaceship3','weapon3']]];
+                    app.doAction("PVPContinue");
+                } else {
+                    app.playIntro();
+                }
             break;
             case "skipIntro":
                 clearTimeout(timeout);
@@ -127,9 +132,15 @@ let app = {
                 aIntro.volume = 0;
                 aMenu.volume = 0;
                 aSwoosh.volume = 0;
+                aBoost.volume = 0;
+                aGas.volume = 0;
                 aClassic.volume = 0;
                 aDouble.volume = 0;
                 aCannon.volume = 0;
+                aZap.volume = 0;
+                aExplosion.volume = 0;
+                aCollision.volume = 0;
+                aDragging.volume = 0;
                 if (debug) {
                     app.gameData.teams = [[['spaceship2','weapon2'],['spaceship1','weapon1'],['spaceship3','weapon3']],[['spaceship1','weapon1'],['spaceship2','weapon2'],['spaceship3','weapon3']]];
                     app.doAction("PVPContinue");

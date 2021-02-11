@@ -131,10 +131,33 @@ class Special extends Sprite {
             case "immunity":
                 src="img/immunity.svg";
                 break;
+            case "firework":
+                src="img/firework.svg";
+                break;
+            case "bomb":
+                src="img/bomb.svg";
+                break;
         }
         if (x==0 && y==0) [x,y] = app.game.randPos(width,height);
         super(src,width,height,x,y,a,moves,vx0,vy0);
         this.opacity = 0;
+        this.r=width/2;
+        this.type=type;
+    }
+    use(player) {
+        switch (this.type) {
+            case "immunity":
+                player.immune=true;
+                setTimeout(()=>{player.immune = false;},5000);
+                break;
+            case "firework":
+                player.shootFwk();
+                break;
+            case "bomb":
+                player.setBomb();
+                break;
+        }
+        player.special = null;
     }
     draw() {
         super.draw();
@@ -167,10 +190,26 @@ class Spaceship extends Sprite {
         this.wrefresh = 0;
         this.r = 25;
         this.shooting = false;
+        this.useSpecial = false;
+        this.special = null;
+        this.immune = false;
+    }
+    drawAura() {
+        let gradient = ctx.createRadialGradient(this.x, this.y, 25, this.x, this.y, 50);
+        gradient.addColorStop(0, "rgba(217, 232, 160, 0.2)");
+        gradient.addColorStop(1, "rgba(217, 232, 160, 0)");
+        ctx.arc(this.x, this.y, 50, 0, 2 * Math.PI);
+        ctx.fillStyle = gradient;
+        ctx.fill();
     }
     draw() {
+        if (this.immune) {
+            this.opacity=0.5;
+            this.drawAura();
+        }
         super.draw();
         if (this.af) {
+            this.boost();
             this.boost();
             this.boost();
         }
@@ -179,6 +218,12 @@ class Spaceship extends Sprite {
         if (this.ab) this.gas(-1.5708);
     }
     gas(an) {
+        clearTimeout(aGTimeout);
+        aGas.play();
+        aGTimeout = setTimeout(()=>{
+            aGas.pause();
+            aGas.currentTime = 0;
+        },100);
         let arnd = Math.random()*0.3;
         let rnd = Math.random();
         let rnd2 = Math.random();
@@ -195,16 +240,22 @@ class Spaceship extends Sprite {
         app.game.particles.push(new Particle(this.x+this.r*Math.cos(this.a+an)+rnd2*4-2,this.y+this.r*Math.sin(this.a+an)+rnd3*4-2,this.vx/1000+v*mx,this.vy/1000+v*my,w,t,cS,cF));
     }
     boost() {
-        let arnd = Math.random()*0.4;
+        clearTimeout(aBTimeout);
+        aBoost.play();
+        aBTimeout = setTimeout(()=>{
+            aBoost.pause();
+            aBoost.currentTime = 0;
+        },100);
+        let arnd = Math.random()*0.2;
         let rnd = Math.random();
         let rnd2 = Math.random();
         let rnd3 = Math.random();
-        let a = this.a+1.5708+arnd-0.2;
+        let a = this.a+1.5708+arnd-0.1;
         let mx = Math.cos(a);
         let my = Math.sin(a);
-        let v = (2+rnd*0.6)*this.stats.boost/10000;
+        let v = 0.4+(2+rnd*0.6)*this.stats.boost/10000;
         let w = 4+(~~(rnd2*4));
-        let t = 250+rnd3*100;
+        let t = 200+rnd3*60;
         let rnd5 = 0.5+rnd*0.5;
         let rnd52 = 0.5+rnd2*0.5;
         let cS = {r:255*rnd5,g:50*rnd52,b:0,a:1};
@@ -212,6 +263,21 @@ class Spaceship extends Sprite {
         app.game.particles.push(new Particle(this.x+this.r*Math.cos(this.a+1.5708)+rnd2*12-6,this.y+this.r*Math.sin(this.a+1.5708)+rnd3*12-6,this.vx/1000+v*mx,this.vy/1000+v*my,w,t,cS,cF));
     }
     hit(nx,ny,pv) {
+        if (aCollision.volume>0) {
+            if (pv<-35) {
+                aCollision.currentTime = 0;
+                let vol = 0.04+Math.abs(pv)/4000;
+                aCollision.volume = vol<=1?vol:1;
+                aCollision.play();
+            } else {
+                clearTimeout(aDTimeout);
+                aDragging.play();
+                aDTimeout = setTimeout(()=>{
+                    aDragging.pause();
+                    aDragging.currentTime = 0;
+                },100);
+            }
+        }
         let vMod = physics.vMod(this.vx,this.vy);
         let pnx = (this.vx)/vMod+Math.sign(this.vx)*Math.abs(ny)*0.7+nx*0.3; 
         let pny = (this.vy)/vMod+Math.sign(this.vy)*Math.abs(nx)*0.7+ny*0.3;
@@ -247,9 +313,25 @@ class Spaceship extends Sprite {
         }
         physics.explosion(this);
     }
+    setBomb() {
+        let a = this.a+Math.PI/2;
+        let mx = Math.cos(a);
+        let my = Math.sin(a);
+        let bomb = new Bomb(this,this.x+mx*50,this.y+my*50);
+        physics.bullets.push(bomb);
+    }
+    shootFwk() {
+        let a = this.a-Math.PI/2;
+        let mx = Math.cos(a);
+        let my = Math.sin(a);
+        aCannon.currentTime = 0;
+        aCannon.play();
+        let firework = new Firework(this,this.x+mx*30,this.y+my*30,a,this.vx,this.vy);
+        physics.bullets.push(firework);
+    }
     shoot() {
         if (this.wrefresh<=0) {
-            let a = this.a-Math.PI/2
+            let a = this.a-Math.PI/2;
             if (this.weapon.type=="single") {
                 if (this.weapon.dmg<25) {
                     aClassic.currentTime = 0;
@@ -313,7 +395,7 @@ class Particle extends Entity {
 }
 
 class Bullet extends Entity {
-    constructor(x, y, a, v, color, dmg, vxs = 0, vys = 0) {
+    constructor(x, y, a, v, color, dmg, vxs = 0, vys = 0, r = 0) {
         let nx = Math.cos(a);
         let ny = Math.sin(a);
         super(x,y,a,true,v*nx+vxs,v*ny+vys);
@@ -322,7 +404,8 @@ class Bullet extends Entity {
         this.l = v/40;
         this.color = color;
         this.dmg = dmg;
-        this.r = 2+dmg/6;
+        if (r) this.r = r;
+        else this.r = 2+dmg/6;
     }
     draw() {
         let mx = this.l/2*this.nx;
@@ -355,5 +438,49 @@ class Bullet extends Entity {
             let cF = {r:255*rnd5,g:255*rnd5,b:255*rnd5,a:0};
             app.game.particles.push(new Particle(this.x+rnd*20-10,this.y+rnd*20-10,vx*rnd5,vy*rnd52,w,t,cS,cF));
         }
+    }
+}
+
+class Firework extends Bullet {
+    constructor(player, x, y, a, vxs = 0, vys = 0, v = 800, color = "rgb(215, 125, 240)", dmg = 40, r = 0) {
+        super(x, y, a, v, color, dmg, vxs, vys, r);
+        this.player=player;
+        this.exploded = false;
+        this.player.useSpecial=false;
+    }
+    draw() {
+        super.draw();
+        if (this.player.useSpecial) this.explode();
+    }
+    hit() {
+        this.explode();
+    }
+    explode() {
+        this.exploded = true;
+        let color = this.color.match(/\d+/g);
+        for (let a = 0; a<6.28; a+=0.12) {
+            let rnd = Math.random();
+            let mx = Math.cos(a+rnd);
+            let my = Math.sin(a+rnd);
+            let v = 0.1+rnd*0.5;
+            let w = 3+(~~(rnd*8));
+            let t = 500+rnd*1000;
+            let rnd5 = 0.5+rnd*0.5;
+            let cS = {r:color[0]*rnd5,g:color[1]*rnd5,b:color[2]*rnd5,a:1};
+            let cF = {r:255*rnd5,g:255*rnd5,b:0,a:0};
+            app.game.particles.push(new Particle(this.x+rnd*40-20,this.y+rnd*40-20,v*mx,v*my,w,t,cS,cF));
+        }
+        physics.explosion(this);
+    }
+}
+
+class Bomb extends Firework {
+    constructor(player, x, y, a = 0, vxs = 0, vys = 0, v = 0, color = "rgb(168, 44, 35)", dmg = 40, r = 25) {
+        super(player, x, y, a, vxs, vys, v, color, dmg, r);
+        this.timer = setTimeout(()=>{this.explode();},5000);
+    }
+    explode() {
+        clearTimeout(this.timer);
+        super.explode();
     }
 }

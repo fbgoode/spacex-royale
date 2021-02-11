@@ -15,6 +15,25 @@ let aDouble = document.getElementById("aDouble");
 aDouble.volume = 0.08;
 let aCannon = document.getElementById("aCannon");
 aCannon.volume = 0.08;
+let aZap = document.getElementById("aZap");
+aZap.volume = 0.01;
+let aExplosion = document.getElementById("aExplosion");
+aExplosion.volume = 0.17;
+let aCollision = document.getElementById("aCollision");
+aCollision.volume = 0.1;
+let aDragging = document.getElementById("aDragging");
+aDragging.volume = 0.15;
+aDragging.loop = true;
+let aDTimeout = setTimeout(()=>{});
+let aBoost = document.getElementById("aBoost");
+aBoost.volume = 0.3;
+aBoost.loop = true;
+let aBTimeout = setTimeout(()=>{});
+let aGas = document.getElementById("aGas");
+aGas.volume = 0.1;
+aGas.loop = true;
+let aGTimeout = setTimeout(()=>{});
+
 
 class Game {
 
@@ -47,6 +66,8 @@ class Game {
         this.visibleEntities = {block1:block};
         this.visibleEntities.player1 = this.player1;
         this.visibleEntities.player2 = this.player2;
+        this.specialInt = setInterval(()=>{this.newSpecial()},13000);
+        this.specials = ["immunity","bomb","firework"]
         this.running = true;
         this.gamefinished = false;
         this.lastFrame = null;
@@ -58,6 +79,30 @@ class Game {
     }
     start() {
         this.gameLoop();
+    }
+    newSpecial() {
+        this.special = new Special(this.specials[(~~(Math.random()*3))]);
+        this.visibleEntities.special = this.special;
+    }
+    handleSpecial() {
+        if (this.player1.useSpecial && this.player1.special) this.player1.special.use(this.player1);
+        if (this.player2.useSpecial && this.player2.special) this.player2.special.use(this.player2);
+        if (this.special===null) return;
+        let Col;
+        let dmin = 0;
+        let mod = 0;
+        for (let player of [this.player1,this.player2]) {
+            let d = physics.dCC(this.special,player);
+            if (d<dmin) {
+                dmin = d;
+                Col = player;
+            }
+        }
+        if (dmin) {
+            Col.special = this.special;
+            this.special = null;
+            delete this.visibleEntities.special;
+        }
     }
     nextShipP1() {
         if (this.player1i<2) {
@@ -84,6 +129,7 @@ class Game {
         }
     }
     gameFinishP2() {
+        clearInterval(this.specialInt);
         this.gamefinished = true;
         this.stopMoving();
         this.keyupManager = () => {};
@@ -101,6 +147,7 @@ class Game {
         setTimeout(()=>{app.finishGame();},7000);
     }
     gameFinishP1() {
+        clearInterval(this.specialInt);
         this.gamefinished = true;
         this.stopMoving();
         this.keyupManager = () => {};
@@ -170,6 +217,7 @@ class Game {
         this.renderHUD();
         if (this.player1.shooting) this.player1.shoot();
         if (this.player2.shooting) this.player2.shoot();
+        this.handleSpecial();
     }
     renderHUD() {
         this.life1.width = this.player1.HP/this.player1.stats.HP*890;
@@ -188,11 +236,14 @@ class Game {
         for (let i = this.player2i;i<3;i++) {
             ctx.drawImage(this.team2[i].img, 1720+i*60, 970, 50, 50);
         }
+        ctx.globalAlpha = 0.3;
+        if (this.player1.special) {
+            ctx.drawImage(this.player1.special.img, 30, 110, 50, 50);
+        }
+        if (this.player2.special) {
+            ctx.drawImage(this.player2.special.img, 1840, 915, 50, 50);
+        }
         ctx.restore();
-    }
-    newSpecial() {
-        this.special = new Special("immunity");
-        this.visibleEntities.special = this.special;
     }
     render() {
         for (let key in this.visibleEntities) {
@@ -257,6 +308,12 @@ class Game {
             case "P2Shoot":
                 this.player2.shooting = true;
                 break;
+            case "P1Special":
+                this.player1.useSpecial = true;
+                break;
+            case "P2Special":
+                this.player2.useSpecial = true;
+                break;
         }
     }
     keyupManager(e) {
@@ -311,6 +368,12 @@ class Game {
                 break;
             case "P2Shoot":
                 this.player2.shooting = false;
+                break;
+            case "P1Special":
+                this.player1.useSpecial = false;
+                break;
+            case "P2Special":
+                this.player2.useSpecial = false;
                 break;
         }
     }

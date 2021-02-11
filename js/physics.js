@@ -13,7 +13,7 @@ class Physics {
         for (let W of this.walls) {
             if (this.bWP(W,player)) {
                 let d = this.dPnC(W,player);
-                if (d<dmin && d>-player.r) {
+                if (d<dmin && d>-2*player.r) {
                     dmin = d;
                     Col = W;
                 }
@@ -92,6 +92,8 @@ class Physics {
         }
     }
     explosion(P) {
+        aExplosion.currentTime = 0;
+        aExplosion.play();
         for (let player of this.players) {
             if (player.opacity >= 1 && (player.x!=P.x || player.y!=P.y)) {
                 let d = this.dPP(P,player);
@@ -123,6 +125,8 @@ class Physics {
         }
         if (dmin>-80) {
             bullet.hit(nx,ny);
+            aZap.currentTime = 0;
+            aZap.play();
             return true;
         } else {
             return false;
@@ -138,6 +142,13 @@ class Physics {
                 let nx = (bullet.x-player.x)/mod;
                 let ny = (bullet.y-player.y)/mod;
                 bullet.hit(nx,ny);
+                if (aCollision.volume>0) {
+                    aCollision.currentTime = 0;
+                    let vol = 0.008+bullet.dmg/2000;
+                    aCollision.volume = vol<=1?vol:1;
+                    aCollision.play();
+                }
+                
                 return true;
             }
         }
@@ -199,7 +210,7 @@ class Physics {
         }
         // Detect collisions
         for (let i in this.bullets) {
-            if (this.wbCollisions(this.bullets[i]) || this.pbCollisions(this.bullets[i])) {
+            if (this.wbCollisions(this.bullets[i]) || this.pbCollisions(this.bullets[i]) || this.bullets[i].exploded) {
                 this.bullets.splice(i,1);
             }
         }
