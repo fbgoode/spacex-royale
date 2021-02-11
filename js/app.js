@@ -89,7 +89,7 @@ let app = {
         weaponmax: {
             v: 3000,
             freq: 0.15,
-            dmg: 40
+            dmg: 50
         },
         weapon1: {
             name: "Classic",
@@ -109,8 +109,8 @@ let app = {
             name: "Cannon",
             v: 3000,
             type: 'single',
-            freq: 1.5,
-            dmg: 40
+            freq: 0.9,
+            dmg: 50
         }
     },
     doAction: (id) => {
@@ -277,6 +277,8 @@ let app = {
             weaponStatDMG.style.width = `${(~~(app.weapons[selectionId].dmg/app.weapons.weaponmax.dmg*100))}%`;
             weaponStatSPD.style.width = `${(~~(app.weapons[selectionId].v/app.weapons.weaponmax.v*100))}%`;
             weaponStatFRQ.style.width = `${(~~(app.weapons.weaponmax.freq/app.weapons[selectionId].freq*100))}%`;
+            if(app.weapons[selectionId].type=="double") document.getElementById("weaponX2").classList.remove("display-none");
+            else document.getElementById("weaponX2").classList.add("display-none");
         } else {
             spaceshipName.innerHTML="Ship";
             spaceshipStatHP.style.width = "0";

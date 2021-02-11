@@ -251,6 +251,7 @@ body {
 
 .stats {
     flex-wrap: wrap;
+    position:relative;
 }
 
 .stats .row:last-child {
@@ -521,6 +522,14 @@ body {
 #muskImg {
     width: 50vmin;
     image-rendering: pixelated;
+}
+
+#weaponX2 {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    font-size: 2vmin;
+    padding: 0.6vmin 0.7vmin;
 }
 
 /* Media */

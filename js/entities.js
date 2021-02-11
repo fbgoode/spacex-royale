@@ -442,7 +442,7 @@ class Bullet extends Entity {
 }
 
 class Firework extends Bullet {
-    constructor(player, x, y, a, vxs = 0, vys = 0, v = 800, color = "rgb(215, 125, 240)", dmg = 40, r = 0) {
+    constructor(player, x, y, a, vxs = 0, vys = 0, v = 800, color = "rgb(215, 125, 240)", dmg = 10, r = 9) {
         super(x, y, a, v, color, dmg, vxs, vys, r);
         this.player=player;
         this.exploded = false;
