@@ -60,7 +60,7 @@ class Game {
         this.visibleEntities = {...this.map.entities};
         this.visibleEntities.player1 = this.player1;
         this.visibleEntities.player2 = this.player2;
-        this.specialInt = setInterval(()=>{this.newSpecial()},13000);
+        this.specialInt = setInterval(()=>{this.newSpecial()},500);
         this.specials = ["immunity","bomb","firework"]
         this.running = true;
         this.gamefinished = false;
@@ -383,7 +383,12 @@ class Game {
                     if (Math.abs(d)<Math.abs(dmin)) dmin = d;
                 } else if (key!="special") {
                     for (let W of this.visibleEntities[key].walls) {
+                        if (!Physics.bWP(W,{x:x,y:y})) continue;
                         let d = Physics.dPnP(W,{x:x,y:y});
+                        if (Math.abs(d)<Math.abs(dmin)) dmin = d;
+                    }
+                    for (let S of this.visibleEntities[key].salients) {
+                        let d = Physics.dPP(S,{x:x,y:y});
                         if (Math.abs(d)<Math.abs(dmin)) dmin = d;
                     }
                 }

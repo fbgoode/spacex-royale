@@ -11,7 +11,7 @@ class Physics {
         let Col = {};
         let dmin = 0;
         for (let W of this.walls) {
-            if (this.bWP(W,player)) {
+            if (Physics.bWP(W,player)) {
                 let d = Physics.dPnC(W,player);
                 if (d<dmin && d>-2*player.r) {
                     dmin = d;
@@ -110,20 +110,26 @@ class Physics {
         }
     }
     wbCollisions(bullet) {
-        let dmin = -80;
+        let dmin = 2000;
         let nx;
         let ny;
         for (let W of this.walls) {
-            if (this.bWP(W,bullet)) {
-                let d = Physics.dPnP(W,bullet);
-                if (d<0 && d>dmin) {
-                    dmin=d;
-                    nx=W.nx;
-                    ny=W.ny;
-                }
+            if (!Physics.bWP(W,bullet)) continue;
+            let d = Physics.dPnP(W,bullet);
+            if (Math.abs(d)<Math.abs(dmin)) {
+                dmin = d;
+                nx = W.nx;
+                ny = W.ny;
             }
         }
-        if (dmin>-80) {
+        for (let S of this.salients) {
+            let d = Physics.dPP(S,bullet);
+            if (Math.abs(d)<Math.abs(dmin)) {
+                dmin = d;
+                [nx,ny] = Physics.uPP(S,bullet);
+            }
+        }
+        if (dmin - bullet.r <0) {
             bullet.hit(nx,ny);
             aZap.currentTime = 0;
             aZap.play();
@@ -216,7 +222,7 @@ class Physics {
         }
     }
     // Is point in front of wall?
-    bWP(W,P) {
+    static bWP(W,P) {
         let Pn = {
             nx: W.ny,
             ny: -W.nx,
@@ -263,5 +269,12 @@ class Physics {
         let ax = math.cos(a);
         let ay = math.sin(a);
         return [ax*x-ay*y, ay*x+ax*y];
+    }
+    // Unit vector between points
+    static uPP(P1,P2) {
+        let x = P2.x-P1.x;
+        let y = P2.y-P1.y;
+        let mod = Physics.vMod(x,y);
+        return [x/mod,y/mod];
     }
 }
