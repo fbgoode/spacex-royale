@@ -109,8 +109,15 @@ class Polyblock extends Polygon {
     }
 }
 
+class OuterBox extends Polyblock {
+    constructor() {
+        super([{x:0,y:0},{x:1920,y:0},{x:1920,y:1080},{x:0,y:1080}], true);
+    }
+    draw(){}
+}
+
 class LifeBar extends Entity {
-    constructor(color,width,height,x,y,a = 0, moves = false, vx0 = 0, vy0 = 0) {
+    constructor(width,height,x,y,color,a = 0, moves = false, vx0 = 0, vy0 = 0) {
         super(x, y, a, moves, vx0, vy0);
         this.width = width;
         this.height = height;
@@ -129,7 +136,7 @@ class LifeBar extends Entity {
 }
 
 class Rectangle extends Entity {
-    constructor(color,width,height,x,y,a = 0, moves = false, vx0 = 0, vy0 = 0) {
+    constructor(width,height,x,y,color,a = 0, moves = false, vx0 = 0, vy0 = 0) {
         super(x, y, a, moves, vx0, vy0);
         this.width = width;
         this.height = height;
@@ -149,8 +156,8 @@ class Rectangle extends Entity {
 }
 
 class Block extends Rectangle {
-    constructor(color,width,height,x,y,a = 0, moves = false, vx0 = 0, vy0 = 0) {
-        super(color,width,height,x, y, a, moves, vx0, vy0);
+    constructor(width,height,x,y,color = "rgba(255, 255, 255, 0.3)",a = 0, moves = false, vx0 = 0, vy0 = 0) {
+        super(width,height,x, y, color, a, moves, vx0, vy0);
         this.walls = [];
         let vxx = 1;
         let vxy = 0;

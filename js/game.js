@@ -53,20 +53,11 @@ class Game {
         this.player2.opacity=0;
         this.player1i = 0;
         this.player2i = 0;
-        this.life1 = new LifeBar("rgba(50, 84, 168, 0.5)",890,10,70,30);
-        this.life2 = new LifeBar("rgba(168, 64, 50, 0.5)",890,10,1850,1050,180);
-        let block = new Block("rgba(255, 255, 255, 0.3)",700,300,1920/2,1080/2);
-        let block2 = new Polyblock([{x:0,y:1080},{x:0,y:500},{x:1000,y:700},{x:600,y:20},{x:1920,y:0},{x:1920,y:400},{x:1800,y:500},{x:1900,y:700},{x:1600,y:1080}],true);
-        let edges = [
-            new Wall(1920,1920/2,0,0,1),
-            new Wall(1920,1920/2,1080,0,-1),
-            new Wall(1080,0,1080/2,1,0),
-            new Wall(1080,1920,1080/2,-1,0)
-        ];
-        //physics = new Physics(0.006,0.8,[this.player1,this.player2],[...edges,...block.walls,...block2.walls],[...block.salients,...block2.salients]);
-        physics = new Physics(0.006,0.8,[this.player1,this.player2],[...edges,...block.walls],[...block.salients]);
-        //this.visibleEntities = {block1:block,block2:block2};
-        this.visibleEntities = {block1:block};
+        this.life1 = new LifeBar(890,10,70,30,"rgba(50, 84, 168, 0.5)");
+        this.life2 = new LifeBar(890,10,1850,1050,"rgba(168, 64, 50, 0.5)",180);
+        this.map = new Map(map2);
+        physics = new Physics(0.006,0.8,[this.player1,this.player2],this.map.walls,this.map.salients);
+        this.visibleEntities = {...this.map.entities};
         this.visibleEntities.player1 = this.player1;
         this.visibleEntities.player2 = this.player2;
         this.specialInt = setInterval(()=>{this.newSpecial()},13000);
@@ -77,7 +68,6 @@ class Game {
         this.finalOpacity=-1;
         ctx.font = "bold 26px Arial";
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        block.draw();
         this.renderHUD();
     }
     start() {
