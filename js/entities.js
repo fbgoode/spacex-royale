@@ -261,6 +261,7 @@ class Special extends Sprite {
 class Spaceship extends Sprite {
     constructor(stats,weapon,color,src,width,height,x,y,a = 0, moves = false, vx0 = 0, vy0 = 0) {
         super(src,width,height,x,y,a,moves,vx0,vy0);
+        this.t = 0;
         this.af = false;
         this.ab = false;
         this.al = false;

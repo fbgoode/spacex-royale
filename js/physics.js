@@ -172,6 +172,14 @@ class Physics {
             }
             player.x += dT * player.vx;
             player.y += dT * player.vy;
+            // Turn
+            if (player.t) {
+                player.va += 40*player.t*dT;
+                if (player.va>5) player.va = 5;
+                else if (player.va<-5) player.va = -5;
+            } else {
+                player.va = 0;
+            }
             // Detect collisions
             if (!this.wpCollisions(player)) {
                 if (!this.spCollisions(player)) {

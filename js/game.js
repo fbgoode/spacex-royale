@@ -40,13 +40,13 @@ class Game {
     particles = [];
     special = null;
 
-    constructor (teams) {
-        this.team1 = [new Spaceship(app.ships[teams[0][0][0]],app.weapons[teams[0][0][1]],"rgb(127, 146, 255)",app.ships[teams[0][0][0]].img.blue,60,60,100,980,90,true),
-                        new Spaceship(app.ships[teams[0][1][0]],app.weapons[teams[0][1][1]],"rgb(127, 146, 255)",app.ships[teams[0][1][0]].img.blue,60,60,100,980,90,true),
-                        new Spaceship(app.ships[teams[0][2][0]],app.weapons[teams[0][2][1]],"rgb(127, 146, 255)",app.ships[teams[0][2][0]].img.blue,60,60,100,980,90,true),];
-        this.team2 = [new Spaceship(app.ships[teams[1][0][0]],app.weapons[teams[1][0][1]],"rgb(255, 127, 127)",app.ships[teams[1][0][0]].img.red,60,60,1820,100,270,true),
-                        new Spaceship(app.ships[teams[1][1][0]],app.weapons[teams[1][1][1]],"rgb(255, 127, 127)",app.ships[teams[1][1][0]].img.red,60,60,1820,100,270,true),
-                        new Spaceship(app.ships[teams[1][2][0]],app.weapons[teams[1][2][1]],"rgb(255, 127, 127)",app.ships[teams[1][2][0]].img.red,60,60,1820,100,270,true),];
+    constructor (gameData) {
+        this.team1 = [new Spaceship(app.ships[gameData.teams[0][0][0]],app.weapons[gameData.teams[0][0][1]],"rgb(127, 146, 255)",app.ships[gameData.teams[0][0][0]].img.blue,60,60,100,980,90,true),
+                        new Spaceship(app.ships[gameData.teams[0][1][0]],app.weapons[gameData.teams[0][1][1]],"rgb(127, 146, 255)",app.ships[gameData.teams[0][1][0]].img.blue,60,60,100,980,90,true),
+                        new Spaceship(app.ships[gameData.teams[0][2][0]],app.weapons[gameData.teams[0][2][1]],"rgb(127, 146, 255)",app.ships[gameData.teams[0][2][0]].img.blue,60,60,100,980,90,true),];
+        this.team2 = [new Spaceship(app.ships[gameData.teams[1][0][0]],app.weapons[gameData.teams[1][0][1]],"rgb(255, 127, 127)",app.ships[gameData.teams[1][0][0]].img.red,60,60,1820,100,270,true),
+                        new Spaceship(app.ships[gameData.teams[1][1][0]],app.weapons[gameData.teams[1][1][1]],"rgb(255, 127, 127)",app.ships[gameData.teams[1][1][0]].img.red,60,60,1820,100,270,true),
+                        new Spaceship(app.ships[gameData.teams[1][2][0]],app.weapons[gameData.teams[1][2][1]],"rgb(255, 127, 127)",app.ships[gameData.teams[1][2][0]].img.red,60,60,1820,100,270,true),];
         this.player1 = this.team1[0];
         this.player2 = this.team2[0];
         this.player1.opacity=0;
@@ -55,12 +55,12 @@ class Game {
         this.player2i = 0;
         this.life1 = new LifeBar(890,10,70,30,"rgba(50, 84, 168, 0.5)");
         this.life2 = new LifeBar(890,10,1850,1050,"rgba(168, 64, 50, 0.5)",180);
-        this.map = new Map(map2);
+        this.map = new Map(gameData.map);
         physics = new Physics(0.006,0.8,[this.player1,this.player2],this.map.walls,this.map.salients);
         this.visibleEntities = {...this.map.entities};
         this.visibleEntities.player1 = this.player1;
         this.visibleEntities.player2 = this.player2;
-        this.specialInt = setInterval(()=>{this.newSpecial()},500);
+        this.specialInt = setInterval(()=>{this.newSpecial()},14000);
         this.specials = ["immunity","bomb","firework"]
         this.running = true;
         this.gamefinished = false;
@@ -69,6 +69,7 @@ class Game {
         ctx.font = "bold 26px Arial";
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         this.renderHUD();
+        this.render();
     }
     start() {
         this.gameLoop();
@@ -260,10 +261,16 @@ class Game {
         }
         switch(action) {
             case "P1TurnL":
-                this.player1.va = -3.4;
+                if (!this.player1.t) {
+                    this.player1.t = -1;
+                    this.player1.va = -1;
+                }
                 break;
             case "P2TurnL":
-                this.player2.va = -3.4;
+                if (!this.player2.t) {
+                    this.player2.t = -1;
+                    this.player2.va = -1;
+                }
                 break;
             case "P1StrafeL":
                 this.player1.al = true;
@@ -272,10 +279,16 @@ class Game {
                 this.player2.al = true;
                 break;
             case "P1TurnR":
-                this.player1.va = 3.4;
+                if (!this.player1.t) {
+                    this.player1.t = 1;
+                    this.player1.va = 1;
+                }
                 break;
             case "P2TurnR":
-                this.player2.va = 3.4;
+                if (!this.player2.t) {
+                    this.player2.t = 1;
+                    this.player2.va = 1;
+                }
                 break;
             case "P1StrafeR":
                 this.player1.ar = true;
@@ -321,10 +334,10 @@ class Game {
         }
         switch(action) {
             case "P1TurnL":
-                this.player1.va = 0;
+                this.player1.t = 0;
                 break;
             case "P2TurnL":
-                this.player2.va = 0;
+                this.player2.t = 0;
                 break;
             case "P1StrafeL":
                 this.player1.al = false;
@@ -333,10 +346,10 @@ class Game {
                 this.player2.al = false;
                 break;
             case "P1TurnR":
-                this.player1.va = 0;
+                this.player1.t = 0;
                 break;
             case "P2TurnR":
-                this.player2.va = 0;
+                this.player2.t = 0;
                 break;
             case "P1StrafeR":
                 this.player1.ar = false;

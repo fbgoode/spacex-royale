@@ -77,7 +77,7 @@ class Menu extends Screen {
                 this.menuItems[i][j].onclick = "";
             }
         }
-        this.selection.classList.remove("selected");
+        if ( this.selection) this.selection.classList.remove("selected");
         this.menuItemIds = menuItemIds;
         this.menuItems = [];
         this.row = row;
@@ -155,5 +155,34 @@ class Menu extends Screen {
     select() {
         app.doAction(this.selectionId);
         this.onSelect(this.selectionId);
+    }
+}
+
+class MapMenu extends Menu {
+    constructor (maps,tempid,containerid) {
+        super(tempid,containerid,[[]],()=>{},(selection)=>{app.selectMap(selection)});
+        this.mapIds=[[]];
+        this.addMapOptions(maps);
+        this.resetItems(this.mapIds)
+    }
+    addMapOptions(maps) {
+        let html='';
+        for (let key in maps) {
+            html += `<div id="${key}" class="mapOption"><div class="mapTitle menuText">${maps[key].name}</div><canvas class="mapCanvas" width="1920" height="1080"></div>`;
+            this.mapIds[0].push(key);
+        }
+        document.getElementById('mapContainer').innerHTML = html;
+        let mapCanvas = document.getElementsByClassName('mapCanvas');
+        let i = 0;
+        for (let key in maps) {
+            ctx = mapCanvas[i].getContext("2d");
+            let map = new Map(maps[key]);
+            for (let key in map.entities) {
+                map.entities[key].draw();
+            }
+            i++;
+        }
+        this.mapIds[0].push('mapBack');
+        ctx = canvas.getContext("2d");
     }
 }

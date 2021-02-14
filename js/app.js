@@ -7,11 +7,18 @@ let app = {
         app.soundMenu();
         setTimeout(()=>{canvas.classList.add("display-block")},1000);
     },
+    maps: {
+        map1:map1,
+        map2:map2,
+        map3:map3
+    },
     gameData: {
-        teams: [[["",""],["",""],["",""]],[["",""],["",""],["",""]]]
+        teams: [[["",""],["",""],["",""]],[["",""],["",""],["",""]]],
+        map:''
     },
     currgameData: {
-        teams: [[["",""],["",""],["",""]],[["",""],["",""],["",""]]]
+        teams: [[["",""],["",""],["",""]],[["",""],["",""],["",""]]],
+        map:''
     },
     sel: "P1S1",
     menuItems: {
@@ -168,21 +175,32 @@ let app = {
                 aMenu.play();
                 break;
             case "PVPContinue":
-                app.menu.resetItems([[]]);
-                app.currgameData = app.gameData;
-                app.gameData = {teams: [[["",""],["",""],["",""]],[["",""],["",""],["",""]]]};
-                app.game = new Game(app.currgameData.teams);
-                let gameScreen = document.getElementById("gameScreen");
-                let gameCanvas = document.getElementById("gameCanvas");
-                let stars = document.getElementById("stars");
-                gameScreen.classList.add("moveDown");
-                gameCanvas.classList.add("noTransform");
-                stars.classList.add("bgDown");
-                aMenu.pause();
-                aSwoosh.play();
-                setTimeout(app.startPVP,4000);
+                app.menu = new MapMenu(app.maps,"t-mapMenu","gameScreen");
+                app.controlsManager.KBM = app.menu;
+                break;
+            case "mapBack":
+                app.gameData = {teams: [[["",""],["",""],["",""]],[["",""],["",""],["",""]]],map:''};
+                app.sel = "P1S1";
+                app.doAction("mainPVP");
                 break;
         }
+    },
+    selectMap(selection) {
+        if (selection=="mapBack") return;
+        app.gameData.map=app.maps[selection];
+        app.menu.resetItems([[]]);
+        app.currgameData = app.gameData;
+        app.gameData = {teams: [[["",""],["",""],["",""]],[["",""],["",""],["",""]]],map:''};
+        app.game = new Game(app.currgameData);
+        let gameScreen = document.getElementById("gameScreen");
+        let gameCanvas = document.getElementById("gameCanvas");
+        let stars = document.getElementById("stars");
+        gameScreen.classList.add("moveDown");
+        gameCanvas.classList.add("noTransform");
+        stars.classList.add("bgDown");
+        aMenu.pause();
+        aSwoosh.play();
+        setTimeout(app.startPVP,4000);
     },
     soundMenu: () => {
         app.menu = new Menu("t-soundMenu","gameScreen",app.menuItems.soundMenu);
