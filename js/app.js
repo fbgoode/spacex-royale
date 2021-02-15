@@ -1,6 +1,7 @@
 let app = {
     init: () => {
         app.controlsManager = new ControlsManager(noControls);
+        app.cfgLoad();
         document.addEventListener('keydown', (e) => {app.controlsManager.kdmDelegate(e)});
         document.addEventListener('keyup', (e) => {app.controlsManager.kumDelegate(e)});
         window.addEventListener('gamepadconnected', () => {if(!app.controlsManager.looping) app.controlsManager.gpListen();});
@@ -63,6 +64,10 @@ let app = {
         P1Special:"",
         P2Special:"GP0[3]"
     },
+    defaults:{
+        gameControls: {P1Boost:"ArrowUp",P2Boost:"R",P1TurnL:"ArrowLeft",P2TurnL:"D",P1TurnR:"ArrowRight",P2TurnR:"G",P1StrafeL:"M",P2StrafeL:"1",P1StrafeR:",",P2StrafeR:"2",P1Back:"ArrowDown",P2Back:"F",P1Shoot:".",P2Shoot:"3",P1Special:"N",P2Special:"º"},
+        gameControlsGP: {P1Boost:"",P2Boost:"GP0[12]",P1TurnL:"",P2TurnL:"GP0[15]",P1TurnR:"",P2TurnR:"GP0[13]",P1StrafeL:"",P2StrafeL:"GP0[6]",P1StrafeR:"",P2StrafeR:"GP0[7]",P1Back:"",P2Back:"GP0[14]",P1Shoot:"",P2Shoot:"GP0[2]",P1Special:"",P2Special:"GP0[3]"}
+    },
     ships: {
         shipmax: {
             HP: 650,
@@ -119,6 +124,14 @@ let app = {
             dmg: 50
         }
     },
+    cfgSave: () => {
+        localStorage.setItem("gameControls",JSON.stringify(app.gameControls));
+        localStorage.setItem("gameControlsGP",JSON.stringify(app.gameControlsGP));
+    },
+    cfgLoad: () => {
+        if(localStorage.getItem("gameControls")) app.gameControls = JSON.parse(localStorage.getItem("gameControls"));
+        if(localStorage.getItem("gameControlsGP")) app.gameControlsGP = JSON.parse(localStorage.getItem("gameControlsGP"));
+    },
     doAction: (id) => {
         switch (id) {
             case "soundWith":
@@ -166,6 +179,14 @@ let app = {
                 break;
             case "controlsBack":
                 app.doAction("toMainMenu");
+                break;
+            case "controlsReset":
+                for (let key in app.gameControls) {
+                    app.gameControls[key] = app.defaults.gameControls[key];
+                    app.gameControlsGP[key] = app.defaults.gameControlsGP[key];
+                    app.cfgSave();
+                }
+                app.menu.showControls();
                 break;
             case "toMainMenu":
                 app.menu = new Menu("t-mainMenu","gameScreen",app.menuItems.mainMenu);

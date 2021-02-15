@@ -178,7 +178,7 @@ class ControlsMenu extends Menu {
                 j++;
             }
         }
-        Ids[j]=['controlsBack'];
+        Ids[j]=['controlsBack','controlsReset'];
         this.resetItems(Ids,8);
     }
     showControls() {
@@ -200,7 +200,7 @@ class ControlsMenu extends Menu {
         }
     }
     select() {
-        if (this.selectionId=="controlsBack") {
+        if (this.selectionId=="controlsBack" || this.selectionId=="controlsReset") {
             super.select();
             return;
         }
@@ -225,6 +225,7 @@ class ControlsMenu extends Menu {
         this.buildMenu();
         this.mMoveTo(this.changingControl);
         this.changingControl="";
+        app.cfgSave();
     }
 }
 
