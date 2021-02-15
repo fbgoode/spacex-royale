@@ -251,7 +251,7 @@ class Game {
     }
     keydownManager(e) {
         let key = e.key;
-        if (key.length==1 && /^[a-x]*$/.test(key)) key=key.toUpperCase();
+        if (key.length==1 && /^[a-z]*$/.test(key)) key=key.toUpperCase();
         let action="";
         for (let i in app.gameControls) {
             if (app.gameControls[i]==key) {
@@ -324,7 +324,7 @@ class Game {
     }
     keyupManager(e) {
         let key = e.key;
-        if (key.length==1 && /^[a-x]*$/.test(key)) key=key.toUpperCase();
+        if (key.length==1 && /^[a-z]*$/.test(key)) key=key.toUpperCase();
         let action="";
         for (let i in app.gameControls) {
             if (app.gameControls[i]==key) {

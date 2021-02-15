@@ -82,10 +82,10 @@ body {
     margin-bottom: 2.5vmin;
 }
 
-.menuItem.selected::after {
+.menuItem.selected::after, .controlsBoxKey.selected::after {
     content: " <";
 }
-.menuItem.selected::before {
+.menuItem.selected::before, .controlsBoxKey.selected::before {
     content: "> ";
 }
 

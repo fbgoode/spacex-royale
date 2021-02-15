@@ -30,7 +30,7 @@ class Menu extends Screen {
     }
     keydownManager(e) {
         let key = e.key;
-        if (key.length==1 && /^[a-x]*$/.test(key)) key=key.toUpperCase();
+        if (key.length==1 && /^[a-z]*$/.test(key)) key=key.toUpperCase();
         let action="";
         if (e.key=="Enter") action="Shoot";
         for (let i in app.gameControls) {
@@ -155,6 +155,76 @@ class Menu extends Screen {
     select() {
         app.doAction(this.selectionId);
         this.onSelect(this.selectionId);
+    }
+}
+
+class ControlsMenu extends Menu {
+    constructor (tempid,containerid) {
+        super(tempid,containerid,[[]],()=>{},()=>{});
+        this.showControls();
+        this.buildMenu();
+        this.isControlsMenu=true;
+        this.changingControl="";
+    }
+    buildMenu() {
+        let i = 0;
+        let j = 0;
+        let Ids = [[]];
+        for (let key in app.gameControls) {
+            Ids[j].push(key);
+            i++;
+            if (i%2==0) {
+                Ids.push([]);
+                j++;
+            }
+        }
+        Ids[j]=['controlsBack'];
+        this.resetItems(Ids,8);
+    }
+    showControls() {
+        if (app.controlsManager.looping) this.showControlsGP();
+        else this.showControlsKB();
+    }
+    showControlsGP() {
+        document.getElementById("gamePadMsg").innerHTML ='<span style="color:#9cff9c">- GamePad connected -</span>';
+        for (let key in app.gameControls) {
+            let control = app.gameControlsGP[key];
+            if (!control) control = app.gameControls[key];
+            document.getElementById(key).innerHTML = key.substr(2,key.length-2) + ": " + control;
+        }
+    }
+    showControlsKB() {
+        document.getElementById("gamePadMsg").innerHTML ='- GamePad not found -';
+        for (let key in app.gameControls) {
+            document.getElementById(key).innerHTML = key.substr(2,key.length-2) + ": " + app.gameControls[key];
+        }
+    }
+    select() {
+        if (this.selectionId=="controlsBack") {
+            super.select();
+            return;
+        }
+        this.selection.innerHTML = `<span style="color:#9cff9c">${this.selectionId.substr(2,this.selectionId.length-2)}: press key</span>`;
+        this.changingControl=this.selectionId;
+        app.controlsManager.kdmDelegate=(e)=>{this.changeControl(e.key);};
+        app.controlsManager.gpdownManager=(key)=>{this.changeControl(key);};
+        this.resetItems([[]]);
+    }
+    changeControl(key) {
+        app.controlsManager.kdmDelegate=app.controlsManager.kdmDelegateCopy;
+        app.controlsManager.gpdownManager=app.controlsManager.gpdownManagerCopy;
+        if (key.length==1 && /^[a-z]*$/.test(key)) key=key.toUpperCase();
+        let controls;
+        if(key.substr(0,2)=="GP") controls=app.gameControlsGP;
+        else controls=app.gameControls;
+        for (let i in controls) {
+            if (controls[i] == key) controls[i] = controls[this.changingControl];
+        }
+        controls[this.changingControl] = key;
+        this.showControls();
+        this.buildMenu();
+        this.mMoveTo(this.changingControl);
+        this.changingControl="";
     }
 }
 

@@ -24,44 +24,43 @@ let app = {
     menuItems: {
         soundMenu: [["soundWith"],["soundWithout"]],
         mainMenu: [["mainPVP"],["mainControls"]],
-        controlsMenu: [["controlsBack"]],
         PVPMenu: [["spaceship1","spaceship2","spaceship3"],["PVPBack"]],
         PVPMenuW: [["weapon1","weapon2","weapon3"],["PVPBack"]]
     },
     gameControls: {
         P1Boost:"ArrowUp",
-        P1TurnL:"ArrowLeft",
-        P1TurnR:"ArrowRight",
-        P1StrafeL:"M",
-        P1StrafeR:",",
-        P1Back:"ArrowDown",
-        P1Shoot:".",
-        P1Special:"N",
         P2Boost:"R",
+        P1TurnL:"ArrowLeft",
         P2TurnL:"D",
+        P1TurnR:"ArrowRight",
         P2TurnR:"G",
+        P1StrafeL:"M",
         P2StrafeL:"1",
+        P1StrafeR:",",
         P2StrafeR:"2",
+        P1Back:"ArrowDown",
         P2Back:"F",
+        P1Shoot:".",
         P2Shoot:"3",
+        P1Special:"N",
         P2Special:"º"
     },
     gameControlsGP: {
         P1Boost:"",
-        P1TurnL:"",
-        P1TurnR:"",
-        P1StrafeL:"",
-        P1StrafeR:"",
-        P1Back:"",
-        P1Shoot:"",
-        P1Special:"",
         P2Boost:"GP0[12]",
+        P1TurnL:"",
         P2TurnL:"GP0[15]",
+        P1TurnR:"",
         P2TurnR:"GP0[13]",
+        P1StrafeL:"",
         P2StrafeL:"GP0[6]",
+        P1StrafeR:"",
         P2StrafeR:"GP0[7]",
+        P1Back:"",
         P2Back:"GP0[14]",
+        P1Shoot:"",
         P2Shoot:"GP0[2]",
+        P1Special:"",
         P2Special:"GP0[3]"
     },
     ships: {
@@ -162,9 +161,8 @@ let app = {
                 app.controlsManager.KBM = app.menu;
                 break;
             case "mainControls":
-                app.menu = new Menu("t-controlsMenu","gameScreen",app.menuItems.controlsMenu);
+                app.menu = new ControlsMenu("t-controlsMenu","gameScreen");
                 app.controlsManager.KBM = app.menu;
-                app.showControls();
                 break;
             case "controlsBack":
                 app.doAction("toMainMenu");
@@ -261,11 +259,6 @@ let app = {
         setTimeout(()=>{aMenu.currentTime = 0;
             aMenu.play();},4450);
         
-    },
-    showControls: () => {
-        for (let key in app.gameControls) {
-            document.getElementById(key).innerHTML = key.substr(2,key.length-2) + ": " + app.gameControls[key];
-        }
     },
     PVPStatsUpdate: (selectionId) => {
         let spaceshipName = document.getElementById("spaceshipName");
