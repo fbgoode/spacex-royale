@@ -411,7 +411,7 @@ class Game {
     }
 }
 
-class hostGame extends Game {
+class onlineGame extends Game {
     constructor(gameData) {
         super(gameData);
         app.onlineController.menuchannel.onmessage = (message)=>{

@@ -26,7 +26,7 @@ class Physics {
             if (pv < 0) {
                 player.vx -= Col.nx * pv; 
                 player.vy -= Col.ny * pv;
-                if (pv<-300) player.HP += Math.floor(pv * (1/this.ce - 1) / 10);
+                if (pv<-300) player.hurt(-Math.floor(pv * (1/this.ce - 1) / 10));
             }
             player.hit(Col.nx,Col.ny,pv*(1/this.ce-1));
             return true;
@@ -54,7 +54,7 @@ class Physics {
             if (pv < 0) {
                 player.vx -= nx * pv; 
                 player.vy -= ny * pv;
-                if (pv<-300) player.HP += Math.floor(pv * (1/this.ce - 1) / 10);
+                if (pv<-300) player.hurt(-Math.floor(pv * (1/this.ce - 1) / 10));
             }
             player.hit(nx,ny,pv*(1/this.ce-1));
             return true;
@@ -84,9 +84,9 @@ class Physics {
             Col.vx += nx * pv; 
             Col.vy += ny * pv;
             if (pv<-300) {
-                let dmg = Math.floor(pv * (1/this.ce - 1) / 10);
-                player.HP += dmg;
-                Col.HP += dmg;
+                let dmg = -Math.floor(pv * (1/this.ce - 1) / 10);
+                player.hurt(dmg);
+                Col.hurt(dmg);
             }
             player.hit(nx,ny,pv*(1/this.ce-1));
         }
@@ -104,7 +104,7 @@ class Physics {
                     let mod = Physics.vMod(nx,ny);
                     player.vx += v*nx/mod;
                     player.vy += v*ny/mod;
-                    player.HP -= v/10;
+                    player.hurt(v/10);
                 }
             }
         }
@@ -141,7 +141,7 @@ class Physics {
     pbCollisions(bullet) {
         for (let player of this.players) {
             if (player.opacity >= 1 && Physics.dCC(bullet,player)<=0) {
-                player.HP -= bullet.dmg;
+                player.hurt(bullet.dmg);
                 player.vx += bullet.dmg * bullet.vx/500;
                 player.vy += bullet.dmg * bullet.vy/500;
                 let mod = Physics.dPP(bullet,player);

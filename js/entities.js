@@ -345,6 +345,9 @@ class Spaceship extends Sprite {
         let cF = {r:255,g:255,b:255,a:0};
         app.game.particles.push(new Particle(this.x+this.r*Math.cos(this.a+1.5708)+rnd2*12-6,this.y+this.r*Math.sin(this.a+1.5708)+rnd3*12-6,this.vx/1000+v*mx,this.vy/1000+v*my,w,t,cS,cF));
     }
+    hurt(dmg) {
+        this.HP -= dmg;
+    }
     hit(nx,ny,pv) {
         if (aCollision.volume>0) {
             if (pv<-35) {
@@ -448,6 +451,45 @@ class Spaceship extends Sprite {
     }
 }
 
+class RmtSpaceship extends Spaceship {
+    constructor(stats,weapon,color,src,width,height,x,y,a = 0, moves = false, vx0 = 0, vy0 = 0) {
+        super(stats,weapon,color,src,width,height,x,y,a, moves, vx0, vy0);
+        this.remote=true;
+    }
+    hurt(dmg){}
+    rmthurt(dmg){
+        this.HP -= dmg;
+    }
+    setBomb(x,y) {
+        let bomb = new Bomb(this,x,y);
+        physics.bullets.push(bomb);
+    }
+    shootFwk(x,y,a,vx,vy) {
+        aCannon.currentTime = 0;
+        aCannon.play();
+        let firework = new Firework(this,x,y,a,vx,vy);
+        physics.bullets.push(firework);
+    }
+    shoot(x,y,a,vx,vy) {
+        if (this.weapon.type=="single") {
+            if (this.weapon.dmg<25) {
+                aClassic.currentTime = 0;
+                aClassic.play();
+            } else {
+                aCannon.currentTime = 0;
+                aCannon.play();
+            }
+            let bullet = new Bullet(x,y,a,this.weapon.v,this.color,this.weapon.dmg,vx,vy);
+            physics.bullets.push(bullet);
+        } else {
+            aDouble.currentTime = 0;
+            aDouble.play();
+            let bullet = new Bullet(x,y,a,this.weapon.v,this.color,this.weapon.dmg,vx,vy);
+            physics.bullets.push(bullet);
+        }
+    }
+}
+
 class Particle extends Entity {
     constructor(x, y, vx, vy, w, t, colorS, colorF = {r:0,g:0,b:0,a:0}) {
         super(x,y,null,true,vx,vy);
@@ -479,7 +521,6 @@ class Particle extends Entity {
 
 class Bullet extends Entity {
     constructor(x, y, a, v, color, dmg, vxs = 0, vys = 0, r = 0) {
-        this.type="Bullet";
         let nx = Math.cos(a);
         let ny = Math.sin(a);
         super(x,y,a,true,v*nx+vxs,v*ny+vys);
@@ -490,6 +531,7 @@ class Bullet extends Entity {
         this.dmg = dmg;
         if (r) this.r = r;
         else this.r = 2+dmg/6;
+        this.type="Bullet";
     }
     draw() {
         let mx = this.l/2*this.nx;
