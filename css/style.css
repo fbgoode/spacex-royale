@@ -432,6 +432,15 @@ body {
     inset 0 0 1.5vmin 0.2vmin rgba(255,255,255,0.8);
 }
 
+.selectable {
+    -moz-user-select: text;
+    -khtml-user-select: text;
+    -webkit-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+    cursor:auto;
+}
+
 /* IDs */
 
 #gameCanvas {

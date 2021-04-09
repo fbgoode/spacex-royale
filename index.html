@@ -59,8 +59,26 @@
     <script id="t-mainMenu" type="text/x-template">
         <div id="mainMenu" class="flex-center">
             <div id="title" class="menuItem ">SpaceX Royale</div>
-            <div id="mainPVP" class="menuItem selected">Player vs. Player</div>
+            <div id="mainOnline" class="menuItem selected">Online PVP</div>
+            <div id="mainPVP" class="menuItem">PVP Match</div>
             <div id="mainControls" class="menuItem">Controls</div>
+        </div>
+    </script>
+    <!-- Connecting Menu template -->
+    <script id="t-connectingMenu" type="text/x-template">
+        <div id="connectingMenu" class="flex-center">
+            <div id="title" class="menuItem ">Connecting to player 1...</div>
+            <div id="connectingAbort" class="menuItem selected">Abort</div>
+        </div>
+    </script>
+    <!-- Connecting Menu template -->
+    <script id="t-onlineMenu" type="text/x-template">
+        <div id="onlineMenu" class="flex-center">
+            <div id="title" class="menuItem ">Waiting for player 2...</div>
+            <div class="menuText">- Share this link with your opponent -</div>
+            <div id="onlineURL" class="menuText selectable">https://</div>
+            <div id="onlineCopy" class="menuItem selected">Copy link</div>
+            <div id="onlineBack" class="menuItem">Back</div>
         </div>
     </script>
     <!-- Controls Menu template -->
@@ -207,6 +225,7 @@
     <script src="js/gradients.js"></script>
     <script src="js/game.js"></script>
     <script src="js/maps.js"></script>
+    <script src="js/online.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

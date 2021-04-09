@@ -479,6 +479,7 @@ class Particle extends Entity {
 
 class Bullet extends Entity {
     constructor(x, y, a, v, color, dmg, vxs = 0, vys = 0, r = 0) {
+        this.type="Bullet";
         let nx = Math.cos(a);
         let ny = Math.sin(a);
         super(x,y,a,true,v*nx+vxs,v*ny+vys);
@@ -530,6 +531,7 @@ class Firework extends Bullet {
         this.player=player;
         this.exploded = false;
         this.player.useSpecial=false;
+        this.type="Firework";
     }
     draw() {
         super.draw();

@@ -8,6 +8,8 @@ let app = {
         app.soundMenu();
         setTimeout(()=>{canvas.classList.add("display-block")},1000);
     },
+    slaveID: window.location.hash.slice(1),
+    onlineController: '',
     maps: {
         map1:map1,
         map2:map2,
@@ -24,7 +26,7 @@ let app = {
     sel: "P1S1",
     menuItems: {
         soundMenu: [["soundWith"],["soundWithout"]],
-        mainMenu: [["mainPVP"],["mainControls"]],
+        mainMenu: [["mainOnline"],["mainPVP"],["mainControls"]],
         PVPMenu: [["spaceship1","spaceship2","spaceship3"],["PVPBack"]],
         PVPMenuW: [["weapon1","weapon2","weapon3"],["PVPBack"]]
     },
@@ -161,16 +163,41 @@ let app = {
                 aCollision.volume = 0;
                 aDragging.volume = 0;
                 if (debug) {
-                    app.gameData.teams = [[['spaceship2','weapon2'],['spaceship1','weapon1'],['spaceship3','weapon3']],[['spaceship1','weapon1'],['spaceship2','weapon2'],['spaceship3','weapon3']]];
-                    app.doAction("PVPContinue");
+                    /*app.gameData.teams = [[['spaceship2','weapon2'],['spaceship1','weapon1'],['spaceship3','weapon3']],[['spaceship1','weapon1'],['spaceship2','weapon2'],['spaceship3','weapon3']]];
+                    app.doAction("PVPContinue");*/
+                    app.doAction("mainOnline");
                 } else {
                     app.playIntro();
                 }
                 break;
+            case "mainOnline":
+                if (app.slaveID != '') app.menu = new ConnectingMenu();
+                else  app.menu = new OnlineMenu();
+                app.controlsManager.KBM = app.menu;
+                break;
+            case "connectingAbort":
+                app.onlineController.peerConnection.close();
+                app.slaveID = '';
+                app.onlineController = '';
+                app.menu = new OnlineMenu();
+                app.controlsManager.KBM = app.menu;
+                break;
+            case "onlineBack":
+                app.doAction("toMainMenu");
+                break;
+            case "onlineCopy":
+                let copyText = document.getElementById("onlineURL");
+                let range = document.createRange();
+                range.selectNode(copyText);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                document.execCommand("copy");
+                let button = document.getElementById("onlineCopy");
+                button.innerHTML = "Copied";
+                setTimeout(()=>{button.innerHTML = "Copy link";},1500);
+                break;
             case "mainPVP":
-                app.menu = new Menu("t-PVPMenu","gameScreen",app.menuItems.PVPMenu,
-                (selectionId)=>{app.PVPStatsUpdate(selectionId)},
-                (selectionId)=>{app.PVPUpdate(selectionId)});
+                app.menu = new PVPMenu();
                 app.controlsManager.KBM = app.menu;
                 break;
             case "mainControls":
@@ -189,18 +216,26 @@ let app = {
                 app.menu.showControls();
                 break;
             case "toMainMenu":
+                app.onlineController = '';
                 app.menu = new Menu("t-mainMenu","gameScreen",app.menuItems.mainMenu);
                 app.controlsManager.KBM = app.menu;
                 aMenu.play();
                 break;
             case "PVPContinue":
-                app.menu = new MapMenu(app.maps,"t-mapMenu","gameScreen");
+                if (app.onlineController=='') app.menu = new MapMenu(app.maps,"t-mapMenu","gameScreen");
+                else app.menu = new OnlineMapMenu(app.maps,"t-mapMenu","gameScreen");
                 app.controlsManager.KBM = app.menu;
                 break;
             case "mapBack":
                 app.gameData = {teams: [[["",""],["",""],["",""]],[["",""],["",""],["",""]]],map:''};
                 app.sel = "P1S1";
-                app.doAction("mainPVP");
+                if (app.onlineController=='') {
+                    app.menu = new PVPMenu();
+                    app.controlsManager.KBM = app.menu;
+                } else if (app.slaveID == '') {
+                    app.menu = new HostPVPMenu();
+                    app.controlsManager.KBM = app.menu;
+                } else app.menu = new SlavePVPMenu();
                 break;
         }
     },
@@ -211,6 +246,23 @@ let app = {
         app.currgameData = app.gameData;
         app.gameData = {teams: [[["",""],["",""],["",""]],[["",""],["",""],["",""]]],map:''};
         app.game = new Game(app.currgameData);
+        let gameScreen = document.getElementById("gameScreen");
+        let gameCanvas = document.getElementById("gameCanvas");
+        let stars = document.getElementById("stars");
+        gameScreen.classList.add("moveDown");
+        gameCanvas.classList.add("noTransform");
+        stars.classList.add("bgDown");
+        aMenu.pause();
+        aSwoosh.play();
+        setTimeout(app.startPVP,4000);
+    },
+    selectOnlineMap(selection) {
+        if (selection=="mapBack") return;
+        app.gameData.map=app.maps[selection];
+        app.menu.resetItems([[]]);
+        app.currgameData = app.gameData;
+        app.gameData = {teams: [[["",""],["",""],["",""]],[["",""],["",""],["",""]]],map:''};
+        app.game = new OnlineGame(app.currgameData);
         let gameScreen = document.getElementById("gameScreen");
         let gameCanvas = document.getElementById("gameCanvas");
         let stars = document.getElementById("stars");
@@ -280,299 +332,6 @@ let app = {
         setTimeout(()=>{aMenu.currentTime = 0;
             aMenu.play();},4450);
         
-    },
-    PVPStatsUpdate: (selectionId) => {
-        let spaceshipName = document.getElementById("spaceshipName");
-        let spaceshipStatHP = document.getElementById("spaceshipStatHP");
-        let spaceshipStatSPD = document.getElementById("spaceshipStatSPD");
-        let spaceshipStatGAS = document.getElementById("spaceshipStatGAS");
-        let weaponName = document.getElementById("weaponName");
-        let weaponStatDMG = document.getElementById("weaponStatDMG");
-        let weaponStatSPD = document.getElementById("weaponStatSPD");
-        let weaponStatFRQ = document.getElementById("weaponStatFRQ");
-        let type = selectionId.substr(0,selectionId.length-1);
-        if(type=="spaceship") {
-            spaceshipName.innerHTML=app.ships[selectionId].name;
-            spaceshipStatHP.style.width = `${(~~(app.ships[selectionId].HP/app.ships.shipmax.HP*100))}%`;
-            spaceshipStatSPD.style.width = `${(~~(app.ships[selectionId].boost/app.ships.shipmax.boost*100))}%`;
-            spaceshipStatGAS.style.width = `${(~~(app.ships[selectionId].gas/app.ships.shipmax.gas*100))}%`;
-            weaponName.innerHTML="Weapon";
-            weaponStatDMG.style.width = "0";
-            weaponStatSPD.style.width = "0";
-            weaponStatFRQ.style.width = "0";
-        } else if(type=="weapon") {
-            spaceshipName.innerHTML="Ship";
-            spaceshipStatHP.style.width = "0";
-            spaceshipStatSPD.style.width = "0";
-            spaceshipStatGAS.style.width = "0";
-            weaponName.innerHTML=app.weapons[selectionId].name;
-            weaponStatDMG.style.width = `${(~~(app.weapons[selectionId].dmg/app.weapons.weaponmax.dmg*100))}%`;
-            weaponStatSPD.style.width = `${(~~(app.weapons[selectionId].v/app.weapons.weaponmax.v*100))}%`;
-            weaponStatFRQ.style.width = `${(~~(app.weapons.weaponmax.freq/app.weapons[selectionId].freq*100))}%`;
-            if(app.weapons[selectionId].type=="double") document.getElementById("weaponX2").classList.remove("display-none");
-            else document.getElementById("weaponX2").classList.add("display-none");
-        } else {
-            spaceshipName.innerHTML="Ship";
-            spaceshipStatHP.style.width = "0";
-            spaceshipStatSPD.style.width = "0";
-            spaceshipStatGAS.style.width = "0";
-            weaponName.innerHTML="Weapon";
-            weaponStatDMG.style.width = "0";
-            weaponStatSPD.style.width = "0";
-            weaponStatFRQ.style.width = "0";
-        }
-    },
-    PVPUpdate: (selectionId) => {
-        let msg = document.getElementById("PVPMsg");
-        let spaceshipContainer = document.getElementById("spaceshipContainer");
-        let weaponContainer = document.getElementById("weaponContainer");
-        const changeColors= (color) => {
-            let spaceship1 = document.getElementById("spaceship1");
-            let spaceship2 = document.getElementById("spaceship2");
-            let spaceship3 = document.getElementById("spaceship3");
-            let weapon1 = document.getElementById("weapon1");
-            let weapon2 = document.getElementById("weapon2");
-            let weapon3 = document.getElementById("weapon3");
-            let sc1 = "shipBlue";
-            let sc2 = "shipRed";
-            let wc1 = "weaponBlue";
-            let wc2 = "weaponRed";
-            if (color=="blue") {
-                sc1 = "shipRed";
-                sc2 = "shipBlue";
-                wc1 = "weaponRed";
-                wc2 = "weaponBlue";
-            }
-            spaceship1.classList.remove(sc1);
-            spaceship1.classList.add(sc2);
-            spaceship2.classList.remove(sc1);
-            spaceship2.classList.add(sc2);
-            spaceship3.classList.remove(sc1);
-            spaceship3.classList.add(sc2);
-            weapon1.classList.remove(wc1);
-            weapon1.classList.add(wc2);
-            weapon2.classList.remove(wc1);
-            weapon2.classList.add(wc2);
-            weapon3.classList.remove(wc1);
-            weapon3.classList.add(wc2);
-        };
-        const selectShip = (id) => {
-            spaceshipContainer.classList.add("opacity-03");
-            weaponContainer.classList.remove("opacity-03");
-            let ship = document.getElementById(id);
-            ship.classList.remove("spaceship2");
-            ship.classList.remove("not-selected");
-            ship.classList.add(selectionId);
-        };
-        const removeShip = (id) => {
-            spaceshipContainer.classList.remove("opacity-03");
-            weaponContainer.classList.add("opacity-03");
-            let ship = document.getElementById(id);
-            ship.classList.add("not-selected");
-            ship.classList.remove("spaceship1","spaceship2");
-            ship.classList.add("spaceship2");
-        };
-        const selectWeapon = (id) => {
-            spaceshipContainer.classList.remove("opacity-03");
-            weaponContainer.classList.add("opacity-03");
-            let weapon = document.getElementById(id);
-            weapon.innerHTML=`<div class="${selectionId} weapon"><div></div><div></div></div>`;
-            weapon.classList.remove("not-selected");
-        };
-        const removeWeapon = (id) => {
-            spaceshipContainer.classList.add("opacity-03");
-            weaponContainer.classList.remove("opacity-03");
-            let weapon = document.getElementById(id);
-            weapon.innerHTML=`<div class="weapon2 weapon"><div></div><div></div></div>`;
-            weapon.classList.add("not-selected");
-        };
-        if (selectionId=="PVPBack") {
-            switch (app.sel) {
-                case "P1S1":
-                    app.doAction("toMainMenu");
-                    break;
-                case "P1W1":
-                    app.gameData.teams[0][0][0] = "";
-                    removeShip("team1Ship1");
-                    app.menu.resetItems(app.menuItems.PVPMenu);
-                    msg.innerHTML = `- <span class="blueText">Player 1</span> select Ship 1 -`;
-                    app.sel = "P1S1";
-                    break;
-                case "P2S1":
-                    app.gameData.teams[0][0][1] = "";
-                    removeWeapon("team1Weapon1");
-                    app.menu.resetItems(app.menuItems.PVPMenuW);
-                    msg.innerHTML = `- <span class="blueText">Player 1</span> select Weapon 1 -`;
-                    app.sel = "P1W1";
-                    changeColors("blue");
-                    break;
-                case "P2W1":
-                    app.gameData.teams[1][0][0] = "";
-                    removeShip("team2Ship1");
-                    app.menu.resetItems(app.menuItems.PVPMenu);
-                    msg.innerHTML = `- <span class="redText">Player 2</span> select Ship 1 -`;
-                    app.sel = "P2S1";
-                    break;
-                case "P2S2":
-                    app.gameData.teams[1][0][1] = "";
-                    removeWeapon("team2Weapon1");
-                    app.menu.resetItems(app.menuItems.PVPMenuW);
-                    msg.innerHTML = `- <span class="redText">Player 2</span> select Weapon 1 -`;
-                    app.sel = "P2W1";
-                    break;
-                case "P2W2":
-                    app.gameData.teams[1][1][0] = "";
-                    removeShip("team2Ship2");
-                    app.menu.resetItems(app.menuItems.PVPMenu);
-                    msg.innerHTML = `- <span class="redText">Player 2</span> select Ship 2 -`;
-                    app.sel = "P2S2";
-                    break;
-                case "P1S2":
-                    app.gameData.teams[1][1][1] = "";
-                    removeWeapon("team2Weapon2");
-                    app.menu.resetItems(app.menuItems.PVPMenuW);
-                    msg.innerHTML = `- <span class="redText">Player 2</span> select Weapon 2 -`;
-                    app.sel = "P2W2";
-                    changeColors("red");
-                    break;
-                case "P1W2":
-                    app.gameData.teams[0][1][0] = "";
-                    removeShip("team1Ship2");
-                    app.menu.resetItems(app.menuItems.PVPMenu);
-                    msg.innerHTML = `- <span class="blueText">Player 1</span> select Ship 2 -`;
-                    app.sel = "P1S2";
-                    break;
-                case "P1S3":
-                    app.gameData.teams[0][1][1] = "";
-                    removeWeapon("team1Weapon2");
-                    app.menu.resetItems(app.menuItems.PVPMenuW);
-                    msg.innerHTML = `- <span class="blueText">Player 1</span> select Weapon 2 -`;
-                    app.sel = "P1W2";
-                    break;
-                case "P1W3":
-                    app.gameData.teams[0][2][0] = "";
-                    removeShip("team1Ship3");
-                    app.menu.resetItems(app.menuItems.PVPMenu);
-                    msg.innerHTML = `- <span class="blueText">Player 1</span> select Ship 3 -`;
-                    app.sel = "P1S3";
-                    break;
-                case "P2S3":
-                    app.gameData.teams[0][2][1] = "";
-                    removeWeapon("team1Weapon3");
-                    app.menu.resetItems(app.menuItems.PVPMenuW);
-                    msg.innerHTML = `- <span class="blueText">Player 1</span> select Weapon 3 -`;
-                    app.sel = "P1W3";
-                    changeColors("blue");
-                    break;
-                case "P2W3":
-                    app.gameData.teams[1][2][0] = "";
-                    removeShip("team2Ship3");
-                    app.menu.resetItems(app.menuItems.PVPMenu);
-                    msg.innerHTML = `- <span class="redText">Player 2</span> select Ship 3 -`;
-                    app.sel = "P2S3";
-                    break;
-                case "ready":
-                    app.gameData.teams[1][2][1] = "";
-                    removeWeapon("team2Weapon3");
-                    app.menu.resetItems(app.menuItems.PVPMenuW);
-                    document.getElementById("PVPContinue").classList.add("opacity-03");
-                    msg.innerHTML = `- <span class="redText">Player 2</span> select Weapon 3 -`;
-                    app.sel = "P2W3";
-                    break;
-            }
-        } else {
-            switch (app.sel) {
-                case "P1S1":
-                    app.gameData.teams[0][0][0] = selectionId;
-                    selectShip("team1Ship1");
-                    app.menu.resetItems(app.menuItems.PVPMenuW);
-                    msg.innerHTML = `- <span class="blueText">Player 1</span> select Weapon 1 -`;
-                    app.sel = "P1W1";
-                    break;
-                case "P1W1":
-                    app.gameData.teams[0][0][1] = selectionId;
-                    selectWeapon("team1Weapon1");
-                    app.menu.resetItems(app.menuItems.PVPMenu);
-                    msg.innerHTML = `- <span class="redText">Player 2</span> select Ship 1 -`;
-                    app.sel = "P2S1";
-                    changeColors("red");
-                    break;
-                case "P2S1":
-                    app.gameData.teams[1][0][0] = selectionId;
-                    selectShip("team2Ship1");
-                    app.menu.resetItems(app.menuItems.PVPMenuW);
-                    msg.innerHTML = `- <span class="redText">Player 2</span> select Weapon 1 -`;
-                    app.sel = "P2W1";
-                    break;
-                case "P2W1":
-                    app.gameData.teams[1][0][1] = selectionId;
-                    selectWeapon("team2Weapon1");
-                    app.menu.resetItems(app.menuItems.PVPMenu);
-                    msg.innerHTML = `- <span class="redText">Player 2</span> select Ship 2 -`;
-                    app.sel = "P2S2";
-                    break;
-                case "P2S2":
-                    app.gameData.teams[1][1][0] = selectionId;
-                    selectShip("team2Ship2");
-                    app.menu.resetItems(app.menuItems.PVPMenuW);
-                    msg.innerHTML = `- <span class="redText">Player 2</span> select Weapon 2 -`;
-                    app.sel = "P2W2";
-                    break;
-                case "P2W2":
-                    app.gameData.teams[1][1][1] = selectionId;
-                    selectWeapon("team2Weapon2");
-                    app.menu.resetItems(app.menuItems.PVPMenu);
-                    msg.innerHTML = `- <span class="blueText">Player 1</span> select Ship 2 -`;
-                    app.sel = "P1S2";
-                    changeColors("blue");
-                    break;
-                case "P1S2":
-                    app.gameData.teams[0][1][0] = selectionId;
-                    selectShip("team1Ship2");
-                    app.menu.resetItems(app.menuItems.PVPMenuW);
-                    msg.innerHTML = `- <span class="blueText">Player 1</span> select Weapon 2 -`;
-                    app.sel = "P1W2";
-                    break;
-                case "P1W2":
-                    app.gameData.teams[0][1][1] = selectionId;
-                    selectWeapon("team1Weapon2");
-                    app.menu.resetItems(app.menuItems.PVPMenu);
-                    msg.innerHTML = `- <span class="blueText">Player 1</span> select Ship 3 -`;
-                    app.sel = "P1S3";
-                    break;
-                case "P1S3":
-                    app.gameData.teams[0][2][0] = selectionId;
-                    selectShip("team1Ship3");
-                    app.menu.resetItems(app.menuItems.PVPMenuW);
-                    msg.innerHTML = `- <span class="blueText">Player 1</span> select Weapon 3 -`;
-                    app.sel = "P1W3";
-                    break;
-                case "P1W3":
-                    app.gameData.teams[0][2][1] = selectionId;
-                    selectWeapon("team1Weapon3");
-                    app.menu.resetItems(app.menuItems.PVPMenu);
-                    msg.innerHTML = `- <span class="redText">Player 2</span> select Ship 3 -`;
-                    app.sel = "P2S3";
-                    changeColors("red");
-                    break;
-                case "P2S3":
-                    app.gameData.teams[1][2][0] = selectionId;
-                    selectShip("team2Ship3");
-                    app.menu.resetItems(app.menuItems.PVPMenuW);
-                    msg.innerHTML = `- <span class="redText">Player 2</span> select Weapon 3 -`;
-                    app.sel = "P2W3";
-                    break;
-                case "P2W3":
-                    app.gameData.teams[1][2][1] = selectionId;
-                    selectWeapon("team2Weapon3");
-                    spaceshipContainer.classList.add("opacity-03");
-                    app.menu.resetItems([["PVPBack","PVPContinue"]],0,1);
-                    document.getElementById("PVPContinue").classList.remove("opacity-03");
-                    msg.innerHTML = `- Ready? -`;
-                    app.sel = "ready";
-                    break;
-            }
-        }
     }
 }
 
@@ -584,5 +343,5 @@ let aSwoosh = document.getElementById("aSwoosh");
 aIntro.volume = 0.5;
 aMenu.volume = 0.2;
 aMenu.loop = true;
-let debug = false;
+let debug = true;
 app.init();

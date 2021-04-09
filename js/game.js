@@ -34,7 +34,6 @@ aGas.volume = 0.1;
 aGas.loop = true;
 let aGTimeout = setTimeout(()=>{});
 
-
 class Game {
 
     particles = [];
@@ -410,5 +409,119 @@ class Game {
         } while (true)
         return [x,y];
     }
+}
 
+class hostGame extends Game {
+    constructor(gameData) {
+        super(gameData);
+        app.onlineController.menuchannel.onmessage = (message)=>{
+            this.update(message.data);
+        };
+        this.remoteT = 0;
+        this.ownBullets = {};
+        this.remoteBullets = {};
+        this.bulletid=0;
+    }
+    update(data) {
+        if (data.T<this.remoteT) return;
+        this.remoteT = data.T;
+        this.player2.x = data.player2.x;
+        this.player2.y = data.player2.y;
+        this.player2.vx = data.player2.vx;
+        this.player2.vy = data.player2.vy;
+        this.player2.a = data.player2.a;
+        this.player2.va = data.player2.va;
+        this.player2.al = data.player2.al;
+        this.player2.ar = data.player2.ar;
+        this.player2.af = data.player2.af;
+        this.player2.ab = data.player2.ab;
+        for (let i in data.bullets) {
+            if (this.remoteBullets[i] == 'undefined') {
+                if (data.bullets[i].type=="Bullet"){
+                    this.remoteBullets[i] = new Bullet();
+                }
+                // TODO: ESTAMOS AQUÍ ----------------------------------------------------------------<
+            }
+        }
+    }
+    keydownManager(e) {
+        let key = e.key;
+        if (key.length==1 && /^[a-z]*$/.test(key)) key=key.toUpperCase();
+        let action="";
+        for (let i in app.gameControls) {
+            if (app.gameControls[i]==key) {
+                action=i;
+                break;
+            }
+        }
+        switch(action) {
+            case "P1TurnL":
+                if (!this.player1.t) {
+                    this.player1.t = -1;
+                    this.player1.va = -1;
+                }
+                break;
+            case "P1StrafeL":
+                this.player1.al = true;
+                break;
+            case "P1TurnR":
+                if (!this.player1.t) {
+                    this.player1.t = 1;
+                    this.player1.va = 1;
+                }
+                break;
+            case "P1StrafeR":
+                this.player1.ar = true;
+                break;
+            case "P1Boost":
+                this.player1.af = true;
+                break;
+            case "P1Back":
+                this.player1.ab = true;
+                break;
+            case "P1Shoot":
+                this.player1.shooting = true;
+                break;
+            case "P1Special":
+                this.player1.useSpecial = true;
+                break;
+        }
+    }
+    keyupManager(e) {
+        let key = e.key;
+        if (key.length==1 && /^[a-z]*$/.test(key)) key=key.toUpperCase();
+        let action="";
+        for (let i in app.gameControls) {
+            if (app.gameControls[i]==key) {
+                action=i;
+                break;
+            }
+        }
+        switch(action) {
+            case "P1TurnL":
+                this.player1.t = 0;
+                break;
+            case "P1StrafeL":
+                this.player1.al = false;
+                break;
+            case "P1TurnR":
+                this.player1.t = 0;
+                break;
+            case "P1StrafeR":
+                this.player1.ar = false;
+                break;
+            case "P1Boost":
+                this.player1.af = false;
+                break;
+            case "P1Back":
+                this.player1.ab = false;
+                break;
+            case "P1Shoot":
+                this.player1.shooting = false;
+                break;
+            case "P1Special":
+                this.player1.useSpecial = false;
+                break;
+        }
+    }
 }
