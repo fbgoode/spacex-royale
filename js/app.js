@@ -234,10 +234,7 @@ let app = {
         setTimeout(()=>{
             document.getElementById("comet").classList.add("animate");
             document.getElementById("title1").classList.add("display-none");
-            document.getElementById("title2").classList.remove("display-none");
         },5200);
-        setTimeout(()=>{document.getElementById("title2").classList.add("opacity-1");},6000);
-        setTimeout(()=>{document.getElementById("title2").classList.remove("opacity-1");},9000);
         setTimeout(()=>{
             app.menu = new Menu("t-intro","gameScreen",[["skipIntro"]]);
             app.controlsManager.KBM = app.menu;
@@ -258,7 +255,7 @@ let app = {
                     }
                 },20);
             },83000);
-        },11000);
+        },9000);
         
     },
     startPVP: () => {
