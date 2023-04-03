@@ -13,17 +13,21 @@
 
 ---
 
+```diff
+! Disclaimer: Rapid prototyping - Not clean code
+```
+
 ## About
 
 <table>
 <tr>
 <td>
-  
-**SpaceX Royale** is a two player game built with HTML5, CSS3 and JS ES6. This game was developed with the purpose of learning these basic web development tools in their raw form with Object Oriented Programming & manual JS HTML templating, hence the use of zero external libraries.
+
+This app was developed as a training exercise. <a href="https://fbgoode.github.io/spacex-royale">Check out the result here</a>.
+
+**SpaceX Royale** is a two player game built with HTML5, CSS3 and JS ES6. The objective with this exercise was to quickly build any sort of fighting game with zero external libraries and interesting mechanics. The result includes a physics engine with collision detection, particle support and more.
 
 The game may be played in any modern browser. It can be played on any device in landscape orientation, as long as a keyboard is available. Limited support for GamePad is provided.
-
-This application was developed as a course project at <a href="https://geekshubsacademy.com/">GeeksHubs Academy</a>'s Full Stack Developer Bootcamp by Federico Báez in Valencia, Spain on 2021-2-01 to 2021-2-07.
 
 <p align="center">
 <img src="img/screenshot-game.png" width=800><br>
@@ -42,14 +46,12 @@ The year is 2035. With an exponential growth in wealth, in the last 15 years <b>
 
 You may play the game directly from its <a href="https://fbgoode.github.io/spacex-royale">GitHub Pages deployment</a>.
 
-Alternatively, the application may be downloaded from <a href="https://github.com/fbgoode/spacex-royale/archive/main.zip">this link</a> and executed locally using any modern browser.
-
-The game is a 2-player 3vs3 spaceship battle. Player 1 and 2 select their 3 spaceships and their weapons in a given order. In each selection, it's important to pick the combinations that will give you the best chance to defeat your enemy's ship.
+The game is a 2-player 3vs3 spaceship battle. Player 1 and 2 select their 3 spaceships and their weapons in a given order. With each selection, it's important to pick the combinations that will give you the best chance to defeat your enemy's ship.
 <p align="center">
 <img src="img/screenshot-PVP.jpg" width=500><br>
 <sub>Screenshot - PVP Menu (PC, Chrome v87)</sub>
 </p>
-Once the selections are confirmed the battle starts. Your ships can shoot, yaw, and propell sideways and backwards, but they're faster when moving forward using the main booster. The objective is to destroy all 3 enemy ships before your oponent destroys yours.
+Once the selections are confirmed the battle starts. Your ships can shoot, yaw and propell sideways and backwards, but they're faster when moving forward using the main booster. The objective is to destroy all 3 enemy ships before your oponent destroys yours. Look out for the special items too!
 <p align="center">
 <img src="img/screenshot-controls.jpg" width=500><br>
 <sub>Screenshot - Controls (PC, Chrome v87)</sub>
